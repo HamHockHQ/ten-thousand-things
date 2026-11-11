@@ -372,7 +372,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
   <div class="sec-head">
     <span class="tag volt">Get your own</span>
     <h2 style="margin-top:12px">Three ways in — pick your AI</h2>
-    <p>There is no shared public app, on purpose: a tracker has to <em>remember your numbers</em>, so everyone gets a private copy of their own. All three routes below produce the same tracker. Copy a prompt, paste it, answer two or three setup questions, and you're logging sets within minutes.</p>
+    <p>There is no shared public app, on purpose: a tracker has to <em>remember your numbers</em>, so everyone gets a private copy of their own. All three routes below produce the same tracker. Copy a prompt, paste it, answer two or three setup questions, and you're logging sets within minutes. Route 3 is the GitHub bundle — fork it, point an AI at its URL, or download the zip and drop it in — including a real standalone <em>tracker.html</em> you can open and use with no AI at all.</p>
   </div>
 
   <div class="tabs" role="tablist" aria-label="How to get your copy">
@@ -383,7 +383,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
 
   <div class="panel on" id="panel-muse" role="tabpanel">
     <h3>The easy way: your own Muse copy</h3>
-    <p>Open Muse, start a new chat, and paste the prompt below word for word. Muse will build your tracker as your own private page, set up your goals (10,000 by Jan 1 with the daily habit nested under it), and schedule your check-in reminders. Change the numbers in brackets first if your challenge differs.</p>
+    <p>Open Muse, start a new chat, and paste the prompt below word for word. <strong>Version 2:</strong> the prompt is fully self-contained — every link (demo, join link + code, Ko-fi, GitHub bundle) is written out inside the prompt itself, and its first line tells Muse not to stall saying a link is missing. Muse will build your tracker as your own private page with the current layout (five tabs, opens on Log, huge logging button, Copy last set, double-tap, floating Home), set up your goals (10,000 by Jan 1 with the daily habit nested under it), and schedule your check-in reminders. Change the numbers in brackets first if your challenge differs.</p>
 
     <div class="muse-invite" aria-label="Join Muse invite">
       <h4>New to Muse? Start here — we both get rewarded</h4>
@@ -419,22 +419,79 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
       <li><strong>Log your first set</strong> with the slider. That's it, you're in the challenge.</li>
     </ol>
     <div class="prompt-box">
-      <div class="pb-head"><span>Copy-paste prompt — for Muse</span><button class="copy-btn" type="button" data-copy="promptClaude">Copy prompt</button></div>
-      <textarea id="promptClaude" class="short" readonly>Build me my own copy of the 10,000 Push-Up Challenge Tracker, like the demo on this page, and set it up as my personal tracker.
+      <div class="pb-head"><span>Copy-paste prompt — for Muse (v2, self-contained)</span><button class="copy-btn" type="button" data-copy="promptClaude">Copy prompt</button></div>
+      <textarea id="promptClaude" readonly>IMPORTANT — READ FIRST: This prompt is fully self-contained. Every link you need is written out in full inside this prompt below. You do NOT need any other link, file, or page to build this. Do NOT stop, stall, or reply saying a link is missing, that you cannot access the demo, or that you need me to provide a URL. If a reference link does not open for you, ignore it and build entirely from the spec in this prompt — the spec below is complete.
 
-My challenge: [10,000] push-ups between [today] and [January 1, 2027] — work out my daily target from the days remaining (about 200/day). Also track squats and sit-ups from the start, and let me add custom exercises by name later.
+REFERENCE LINKS — all included right here in this prompt:
+- Live demo (reference only — NOT required to build): https://muse.ai/s/push-up-tracker-demo-page-xtc6xx6xx7bw4xf/qDCSPZPbLwPXKd3-tYsE9XPMP-9V1-8Uh0QsXU98E3g
+- Join Muse (if I am new here): https://muse.ai/join — then in Settings → Redeem token, enter code A6W679 within 48 hours of joining
+- Support / tip jar (optional, never required): https://ko-fi.com/tenthousandthings
+- GitHub bundle (alternative route, also not required): https://github.com/HamHockHQ/ten-thousand-things
 
-The tracker page must show: (1) how many I have left today, (2) how many I have left in the whole challenge, (3) whether I'm ahead of or behind pace. Logging is a slider, not a text box — I slide to the number I did and tap once to log the set. Track my max single set separately and show a chart of my sets plus simple analytics (totals, daily average, streak, best day).
+BUILD REQUEST:
+Build me my own private copy of the 10,000 Push-Up Challenge Tracker and set it up as my personal tracker in Muse. Start my log completely EMPTY — no sample, demo, or placeholder data.
 
-Also set up: check-in reminders every 20 minutes from 11:00 AM to 10:00 PM asking how many I did; a mute for the rest of the day; a snooze slider for any duration I pick (e.g. 2 hours for a nap, a week for vacation); a suggested set size that recalculates from what's left today and the check-ins remaining; and a day-end time I can move later than 10 PM on the fly. Create matching goals for me: the big challenge goal, with the daily-target habit nested under it.
+My challenge: [10,000] push-ups between [today] and [January 1, 2027]. Also track squats and sit-ups from the start, and let me add custom exercises by typing a name later.
 
-Start my log empty, ask me anything you need before building, and confirm my real numbers back to me after my first logged set.</textarea>
+CHALLENGE MATH — do not hardcode 200:
+- Daily target = ceil((total goal − total done) ÷ days remaining including today), recomputed every day and after every logged set. About 200/day is only the starting estimate.
+- Always show: (1) reps left today, (2) reps left in the whole challenge, (3) ahead / on-pace / behind pace with the rep difference.
+- Progress bars for today and for the whole challenge, with percentages.
+- Suggested next set = ceil(reps left today ÷ check-ins remaining before day-end, excluding snoozed time). Show the number and a one-line why. Recompute live when a set is logged, snooze changes, or day-end changes.
+
+LAYOUT — five tabs, succinct icon menu:
+- Fixed bottom tab bar with exactly five tabs: Today, Log, Progress, Exercises, Reminders. Five or six pages max — do not collapse everything into three tabs, and do not use one long single scroll.
+- The app OPENS on the Log tab. Logging a set must be the easiest, first thing I see.
+- Floating Home button: a big button fixed at the bottom right, floating ABOVE the tab bar and above page content, visible on EVERY page/tab. Tapping it always takes me to the Today tab. Keep it separate from the bottom tab menu — it is not just a tab icon.
+
+LOG TAB — make logging almost zero-effort:
+- Exercise switcher for the current exercise.
+- A GIANT rep number display.
+- An OVERSIZED slider (fat track, big thumb, easy to hit with a thumb) — range 0–60 — plus quick chips 5 / 10 / 15 / 20 / 25 and a ★ suggestion chip set to today's suggested set size.
+- A HUGE full-width LOG button under the slider.
+- "Copy last set" button: one tap logs the same reps as my previous set for that exercise (e.g. if my last push-ups set was 15, it logs 15 again). If there is no previous set for that exercise, disable it or explain briefly.
+- Double-tap to log: double-tapping the giant rep number, or double-tapping anywhere else on the log card that is NOT a control (not the slider, chips, buttons, or inputs), logs the current slider amount instantly.
+- Every set is stored with exercise, reps, date, and time.
+
+TODAY TAB:
+- Left-today ring or headline, left in the challenge, pace plan / pace badge, streak, and max set.
+
+PROGRESS TAB:
+- Left in the challenge/year view, per-set bar chart for today, totals, daily average, current streak (days hitting target), best day, 7-day / weekly analytics, and milestone badges at 500 / 1,000 / 2,500 / 5,000 / 7,500 / 10,000 total reps.
+- Max single set tracked separately per exercise.
+- A "shake it up" button that deals a random variation card (wide, diamond, incline, slow negatives, EMOM sets, etc.).
+
+EXERCISES TAB:
+- One card per exercise with its totals and a per-exercise daily target editor (targets are editable per exercise, not just for push-ups).
+- Each card has a Log button that jumps me straight to the Log tab with that exercise already selected.
+- "+ Add" / new exercise: I type a name and it immediately becomes tracked with its own daily total, all-time total, max set, and chart data.
+
+REMINDERS TAB:
+- Check-in reminders every 20 minutes from 11:00 AM to my day-end (default 10:00 PM) asking "how many did you do?" with the same slider logging.
+- Snooze via a slider for ANY duration (30 minutes to 7 days) in addition to quick mutes.
+- One-tap mute for the rest of the day and mute for the rest of the week.
+- While any snooze/mute pause is active, show a dot indicator on the Reminders tab icon.
+- Day-end is adjustable on a slider (default 10:00 PM, can move later, e.g. to midnight); changing it recomputes the suggested set size immediately.
+- Snoozing must feed the pacing math (fewer check-ins remaining = larger suggested sets, unless day-end is extended).
+
+GOALS — create these for me in Muse:
+- Big goal: [10,000] push-ups by [January 1, 2027].
+- Nested under it: the daily-target habit (hit today's recomputed daily target each day).
+
+DESIGN &amp; DATA:
+- Mobile-first, no horizontal scrolling at phone width, every tappable control at least 44px tall, large high-contrast headline numbers, light + dark mode following the system setting.
+- My data is private to me and must persist in Muse so it is still there when I reopen the tracker.
+
+SETUP &amp; FINISH:
+- Before building, ask me only: (1) total goal + end date, (2) daily window + day-end, (3) starting exercises — and accept "use the defaults" as a complete answer.
+- After building, confirm my starting daily target (from the formula above, not just "200").
+- After my FIRST logged set, confirm my real numbers back to me: reps in that set, total done today, left today, and left in the challenge.</textarea>
     </div>
   </div>
 
   <div class="panel" id="panel-any" role="tabpanel">
     <h3>Any AI app: the one-prompt build</h3>
-    <p>Works in ChatGPT, Claude, Gemini, Grok, Copilot — anything that can build a small web app or write code. This prompt is the full spec: every feature, the math, the layout, and an acceptance checklist, so one paste gets you the whole tracker instead of a toy version. If your AI can only give you code, take the file it produces and use route 3 (GitHub) to put it online.</p>
+    <p>Works in ChatGPT, Claude, Gemini, Grok, Copilot — anything that can build a small web app or write code. This prompt (v2) is the full, self-contained spec — every link inside it, every current feature, the math, the five-tab layout, and an updated acceptance checklist covering the floating Home button, Copy last set, and double-tap — so one paste gets you the whole tracker instead of a toy version. If your AI can only give you code, take the file it produces and use route 3 (GitHub) to put it online.</p>
     <ol>
       <li><strong>Copy</strong> the full prompt below.</li>
       <li><strong>Paste</strong> it as the very first message in a new chat.</li>
@@ -442,80 +499,181 @@ Start my log empty, ask me anything you need before building, and confirm my rea
       <li><strong>Run the acceptance checklist</strong> at the end of the prompt against what it built — send back anything that fails.</li>
     </ol>
     <div class="prompt-box">
-      <div class="pb-head"><span>Copy-paste prompt — the complete one-prompt build</span><button class="copy-btn" type="button" data-copy="promptAny">Copy full prompt</button></div>
-      <textarea id="promptAny" readonly>Build me a complete personal push-up challenge tracker as a single-page web app in ONE self-contained HTML file (inline CSS and JavaScript, no build step, no external database). Persist my data so it survives closing and reopening the page (use the storage your platform provides; if none exists, use localStorage and tell me). Do not use placeholder or demo data in my copy — my log starts empty. Before building, ask me only these setup questions, and accept "defaults" as an answer to all of them: (1) total goal and end date [default: 10,000 reps by January 1, 2027], (2) daily check-in window [default: 11:00 AM to 10:00 PM, every 20 minutes], (3) starting exercises [default: push-ups, squats, sit-ups].
+      <div class="pb-head"><span>Copy-paste prompt — the complete one-prompt build (v2)</span><button class="copy-btn" type="button" data-copy="promptAny">Copy full prompt</button></div>
+      <textarea id="promptAny" readonly>IMPORTANT — READ FIRST: This prompt is fully self-contained. Every link you need is written out in full inside this prompt below. You do NOT need any other link, file, or page to build this. Do NOT stop, stall, or reply saying a link is missing, that you cannot access the demo, or that you need me to provide a URL. If a reference link does not open for you, ignore it and build entirely from the spec in this prompt — the spec below is complete.
 
-CORE MATH
-- Daily target = ceil((total goal - total done) / days remaining including today), recomputed every day; show it, don't hardcode 200.
+REFERENCE LINKS — all included right here in this prompt:
+- Live demo (reference only — NOT required to build): https://muse.ai/s/push-up-tracker-demo-page-xtc6xx6xx7bw4xf/qDCSPZPbLwPXKd3-tYsE9XPMP-9V1-8Uh0QsXU98E3g
+- Join Muse (if using Muse and new there): https://muse.ai/join — then in Settings → Redeem token, enter code A6W679 within 48 hours of joining
+- Support / tip jar (optional, never required): https://ko-fi.com/tenthousandthings
+- GitHub bundle (alternative route, also not required): https://github.com/HamHockHQ/ten-thousand-things
+
+BUILD REQUEST:
+Build me a complete personal push-up challenge tracker as a single-page web app in ONE self-contained HTML file (inline CSS and JavaScript, no build step, no external database). Persist my data so it survives closing and reopening the page (use the storage your platform provides; if none exists, use localStorage and tell me that clearly). Do not use placeholder or demo data in my copy — my log starts EMPTY. Before building, ask me only these setup questions, and accept "defaults" as an answer to all of them: (1) total goal and end date [default: 10,000 reps by January 1, 2027], (2) daily check-in window [default: 11:00 AM to 10:00 PM, every 20 minutes], (3) starting exercises [default: push-ups, squats, sit-ups].
+
+CORE MATH — do not hardcode 200:
+- Daily target = ceil((total goal − total done) ÷ days remaining including today), recomputed every day and after every logged set; show it.
 - Always show three headline numbers: reps left today, reps left in the challenge, and pace status (ahead / on pace / behind, with the rep difference).
 - Progress bars for today and for the whole challenge, with percentages.
+- Suggested next set = ceil(reps left today ÷ check-ins remaining before day-end, excluding snoozed time). Show the number and a one-line explanation; recompute live whenever a set is logged, the snooze changes, or the day-end changes.
 
-LOGGING
-- Log a set with a horizontal slider (range 0-60) plus quick-tap chips (5/10/15/20/25/30) and one big "Log this set" button. No required typing anywhere.
-- Every set is stored with exercise, reps, date, and time. An exercise switcher (tabs or segmented control) changes which exercise the slider logs.
-- A "+ New exercise" button: I type a name and it immediately becomes a tracked exercise with its own daily total, all-time total, and max set. Custom exercises get an optional daily target; primary exercises share the challenge math.
+NAVIGATION — five tabs + floating Home:
+- Fixed bottom tab bar with exactly five tabs, succinct icon menu: Today, Log, Progress, Exercises, Reminders. Five or six pages max — do not use one long single scroll and do not collapse into only three tabs.
+- The app OPENS on the Log tab.
+- Floating Home button: big, fixed at bottom right, floating ABOVE the tab bar and content, visible on EVERY tab/page, separate from the bottom tab menu. Tapping it goes to Today.
 
-ANALYTICS
-- Track max single set per exercise. Show a bar chart of today's sets per exercise, plus totals, daily average, current streak (days hitting target), best day, and a 7-day summary.
+LOG TAB — easiest possible logging:
+- Exercise switcher changes which exercise the slider logs.
+- GIANT rep number display, OVERSIZED slider (fat track, big thumb, range 0–60), quick chips 5 / 10 / 15 / 20 / 25 plus a ★ suggestion chip set to today's suggested set size, and a HUGE full-width LOG button reading the current value.
+- "Copy last set": one tap logs the same reps as my previous set for that exercise (label shows the value, e.g. "Copy last set — log 15 again"). Disable/hide if no previous set for that exercise.
+- Double-tap to log: double-tapping the giant number, or double-tapping anywhere else on the log card that is NOT a control (not slider/chips/buttons/inputs), logs the current slider amount — exactly one set per double-tap gesture, guard against double-counting.
+- No required typing anywhere. Every set stored with exercise, reps, date, and time. Recent sets listed and deletable without double-counting.
 
-REMINDERS, SNOOZE, AND PACING (implement as in-app state and, where your platform supports scheduled reminders/notifications, wire them to the same logic)
-- Check-ins every 20 minutes inside the daily window ask "how many did you do?" and present the same slider.
-- Mute for the rest of the day (one tap).
-- Snooze with a slider for ANY duration (30 minutes to 7 days); reminders pause and resume automatically at the chosen time. Snoozing must feed the pacing math below.
-- Suggested next set size = ceil(reps left today / check-ins remaining before day-end, excluding snoozed time). Show the number and a one-line explanation; recompute it live whenever a set is logged, the snooze changes, or the day-end changes.
-- Day-end time is adjustable on a slider (default 10:00 PM, can go to midnight); changing it recomputes suggestions immediately.
+TODAY TAB:
+- Left-today headline/ring, left in challenge, pace plan/badge, streak, max set, today's totals per exercise.
 
-EXTRAS
+PROGRESS TAB:
+- Left in challenge, bar chart of today's sets per exercise, max-set-over-time graph, totals, daily average, current streak (days hitting target), best day, 7-day / weekly analytics (this week vs last week where data exists).
 - Milestone badges at 500 / 1,000 / 2,500 / 5,000 / 7,500 / 10,000 total reps.
-- A "shake it up" button that deals a random variation card (e.g. wide, diamond, incline, slow negatives, EMOM sets).
-- Goals view: the big challenge goal with the daily habit nested under it, both fed by the same logged data.
+- "Shake it up" button deals a random variation card (wide, diamond, incline, slow negatives, EMOM sets, etc.).
 
-DESIGN
+EXERCISES TAB:
+- Card per exercise with today total, all-time total, max set, recent sets, and a per-exercise daily target editor.
+- Each card's Log button jumps straight to Log tab with that exercise selected.
+- "+ New exercise": I type a name and it immediately becomes tracked with its own daily total, all-time total, and max set. Custom exercises get an optional daily target.
+
+REMINDERS TAB (implement as in-app state and, where your platform supports scheduled reminders/notifications, wire them to the same logic; if it cannot schedule, say so plainly and add a next-check-in countdown instead):
+- Check-ins every 20 minutes inside the daily window ask "how many did you do?" and present the same slider.
+- Snooze with a slider for ANY duration (30 minutes to 7 days); reminders pause and resume automatically. Snoozing feeds the pacing math.
+- One-tap mute for rest of day AND mute for rest of week.
+- Dot indicator on the Reminders tab icon while any snooze/mute pause is active, plus clear pause state text ("Snoozed until…", "Muted for today") with one-tap cancel.
+- Day-end adjustable on a slider (default 10:00 PM, can go to midnight/later); changing it recomputes suggestions immediately.
+
+GOALS:
+- Where the platform supports goals/habits, create the big challenge goal ([10,000] by [Jan 1, 2027]) with the daily-target habit nested under it, fed by the same logged data. If not supported, keep the same structure inside the tracker.
+
+DESIGN:
 - Mobile-first, works at phone width with no horizontal scrolling; every tappable control at least 44px tall; large, high-contrast type for the three headline numbers; light and dark mode following the system setting; no account, no sign-up, no ads.
 
 ACCEPTANCE CHECKLIST — after building, verify and report each one:
+[ ] App opens on Log tab; bottom bar has exactly five tabs (Today, Log, Progress, Exercises, Reminders)
+[ ] Floating Home button is visible above the tab bar on every tab and jumps to Today
+[ ] Giant number + oversized slider + quick chips (incl. ★ suggestion chip) + huge LOG button log without any typing
+[ ] "Copy last set" logs the previous set for that exercise in one tap
+[ ] Double-tap on the giant number and on the log card (off controls) logs exactly one set per gesture
 [ ] Headline numbers update correctly after logging a set of 22
-[ ] Daily target recalculates from days remaining, not a fixed 200
-[ ] Slider + quick chips log without any typing
-[ ] A custom exercise can be added and logged
-[ ] Max set and today's chart reflect the sets logged
-[ ] Snooze of 2 hours changes the suggested set size
+[ ] Daily target recalculates via ceil((goal − done) ÷ days remaining incl. today), not a fixed 200
+[ ] A custom exercise can be added and logged; its Exercises-tab Log button lands on Log with it selected
+[ ] Per-exercise targets are editable; max set, streak, and today's chart reflect the sets logged
+[ ] Progress shows weekly analytics and badges; Shake It Up deals a variation card
+[ ] Snooze of 2 hours changes the suggested set size; day/week mutes work and show a dot on Reminders while paused
 [ ] Moving day-end later lowers the suggested set size
-[ ] Data is still there after the page is closed and reopened
-Then tell me my starting daily target and ask for my first set.</textarea>
+[ ] Data is still there after the page is closed and reopened; log started empty
+Then tell me my starting daily target and ask for my first set. After my first logged set, confirm my real numbers back to me (set reps, today total, left today, left in challenge).</textarea>
     </div>
   </div>
 
   <div class="panel" id="panel-github" role="tabpanel">
-    <h3>Self-host it on GitHub (free, ~5 minutes)</h3>
-    <p>Prefer owning the file outright? The tracker is a single HTML file, so GitHub Pages hosts it for free. Get the file from route 2 (any AI can write it), or fork a copy if a friend already has one, then:</p>
+    <h3>GitHub bundle: fork it, point an AI at it, or download the zip</h3>
+    <p>The whole project is bundled as a GitHub repo so you don't have to paste a giant prompt if you don't want to. The repo contains four files: <span class="mono">README.md</span> (install guide), <span class="mono">PROMPT.md</span> (the canonical, self-contained build spec — v2), <span class="mono">tracker.html</span> (the real standalone tracker — one self-contained HTML file, starts empty, saves in your browser), and <span class="mono">index.html</span> (this demo / get-a-copy page, with sample data — for trying and sharing, not for logging your own sets).</p>
+    <p style="border:1.5px dashed var(--line2);border-radius:10px;padding:10px 12px;background:var(--surface2)"><strong>Repo is live:</strong> <a href="https://github.com/HamHockHQ/ten-thousand-things" target="_blank" rel="noopener" style="font-weight:700;text-decoration:underline"><span class="mono" id="repoUrlLabel">https://github.com/HamHockHQ/ten-thousand-things</span></a> — every GitHub link, bootstrap prompt, and README snippet on this page points to that repo.</p>
+
+    <h3 style="margin-top:26px">Route A — Use GitHub directly (no AI needed)</h3>
     <ol>
-      <li><strong>Create a repo</strong> named <span class="mono">push-up-tracker</span> (public) at github.com/new.</li>
-      <li><strong>Add the file:</strong> “Add file → Create new file”, name it <span class="mono">index.html</span>, paste the tracker's full code, commit.</li>
-      <li><strong>Turn on Pages:</strong> Settings → Pages → Deploy from branch → <span class="mono">main</span> / root → Save.</li>
-      <li><strong>Open your link:</strong> GitHub shows your site's address on the Pages settings screen once it deploys — bookmark it on your phone's home screen.</li>
-      <li><strong>Make it yours:</strong> edit the goal and dates at the top of the file; commit again and Pages redeploys in about a minute.</li>
+      <li><strong>Fork the repo</strong> on GitHub (Fork button on the repo page), or create a new public repo named <span class="mono">ten-thousand-things</span> at github.com/new and upload the bundle files.</li>
+      <li><strong>Open <span class="mono">tracker.html</span></strong> in a browser — that's the complete tracker. It starts empty and saves in that browser.</li>
+      <li><strong>Want it on your phone like a website?</strong> Turn on Pages: Settings → Pages → Deploy from branch → <span class="mono">main</span> / root → Save. GitHub shows your site's address on the Pages screen. Open <span class="mono">…/tracker.html</span> there, or rename <span class="mono">tracker.html</span> to <span class="mono">index.html</span> in your fork if you want the tracker at the root address.</li>
+      <li><strong>Make it yours:</strong> edit the goal and dates in <span class="mono">tracker.html</span>, commit, and Pages redeploys in about a minute.</li>
     </ol>
-    <p>One honest note: on GitHub Pages the data lives in that browser's local storage — private to your device, and it won't sync between phone and laptop. If you want syncing and scheduled reminders doing the asking, route 1 (Muse) is the better home. The README snippet below covers the same steps — drop it in your repo so the next person can follow it too.</p>
+    <div class="muse-actions" style="margin-top:14px">
+      <a class="btn volt" id="downloadTrackerLink" href="https://github.com/HamHockHQ/ten-thousand-things/blob/main/tracker.html" target="_blank" rel="noopener">Get tracker.html from the repo →</a>
+      <a class="btn" id="downloadZipLink" href="https://github.com/HamHockHQ/ten-thousand-things/archive/refs/heads/main.zip" target="_blank" rel="noopener">Download repo .zip →</a>
+      <a class="btn" id="repoLink" href="https://github.com/HamHockHQ/ten-thousand-things" target="_blank" rel="noopener">Open the repo →</a>
+    </div>
+
+    <h3 style="margin-top:26px">Route B — Have Muse (or any AI) read it straight from GitHub</h3>
+    <p>Send your AI the repo's GitHub URL plus the short bootstrap prompt below. It tells the AI to read <span class="mono">README.md</span> first, follow <span class="mono">PROMPT.md</span> as the complete spec, and use <span class="mono">tracker.html</span> as the reference implementation — so you never paste the long prompt.</p>
+    <div class="prompt-box">
+      <div class="pb-head"><span>Bootstrap prompt — point your AI at the repo / zip</span><button class="copy-btn" type="button" data-copy="promptBootstrap">Copy bootstrap prompt</button></div>
+      <textarea id="promptBootstrap" class="short" readonly>Build me my own copy of the "Ten Thousand Things" push-up tracker from this GitHub repo: https://github.com/HamHockHQ/ten-thousand-things
+
+Read README.md in that repo first, then follow PROMPT.md in that repo as the complete build spec — PROMPT.md is self-contained and includes every link and feature (demo: https://muse.ai/s/push-up-tracker-demo-page-xtc6xx6xx7bw4xf/qDCSPZPbLwPXKd3-tYsE9XPMP-9V1-8Uh0QsXU98E3g — reference only, never required). Use tracker.html in the repo as the reference implementation of the layout and features. You do not need anything outside the repo. If you cannot read the repo files, say so plainly and I will paste PROMPT.md instead.
+
+Ask me only the setup questions at the end of PROMPT.md (or accept "defaults"), build the complete app as my private copy with my log starting EMPTY, run the acceptance checklist from PROMPT.md, and fix anything that fails before showing it to me.</textarea>
+    </div>
+
+    <h3 style="margin-top:26px">Route C — Download the zip and drop it in</h3>
+    <ol>
+      <li><strong>Download the zip:</strong> on GitHub use Code → Download ZIP (or the “Download repo .zip” button above), then unzip it.</li>
+      <li><strong>Easiest:</strong> open <span class="mono">tracker.html</span> from the unzipped folder and just start logging.</li>
+      <li><strong>Or drop it into Muse:</strong> attach / drop <span class="mono">PROMPT.md</span> — or the whole unzipped folder — into a Muse (or ChatGPT / Gemini) chat, paste the bootstrap prompt above (it works for the folder/zip too, not just the URL), and let the AI build your private, remembering copy.</li>
+    </ol>
+
+    <p><strong>Honest note about the standalone file:</strong> <span class="mono">tracker.html</span> on GitHub Pages / opened locally saves its data in <strong>that browser's localStorage</strong> — private to that device/browser, starts empty, survives closing and reopening in the same browser, but it will <strong>not sync</strong> between phone and laptop and has no server account. Use its Export/Import if you need to move history. If you want syncing and scheduled 20-minute reminders doing the asking, Route 1 (Muse) is the better home.</p>
+    <p>No install route works for you? <span class="mono">PROMPT.md</span> is the canonical spec and contains the complete long prompt — copy it, paste it as the first message in any capable AI chat, done. The prompt is self-contained: it needs no link, file, or demo to work, and it says so right at the top, in case the AI asks.</p>
+
     <div class="prompt-box">
       <div class="pb-head"><span>README.md — copy into your repo</span><button class="copy-btn" type="button" data-copy="promptReadme">Copy README</button></div>
-      <textarea id="promptReadme" class="short" readonly># 10,000 Push-Up Challenge Tracker
+      <textarea id="promptReadme" readonly># Ten Thousand Things — 10,000 Push-Up Challenge Tracker
 
-A single-file tracker for a 10,000-push-ups-by-Jan-1 challenge (~200/day):
-left-today / left-overall / ahead-or-behind at a glance, slider logging,
-max-set chart, squats + sit-ups + custom exercises, smart suggested set
-sizes, snooze-any-length, and an adjustable day-end (10 PM default).
+A personal tracker for 10,000 push-ups before January 1, 2027 (~200/day).
+Everyone runs their OWN private copy — no shared account, nobody else
+sees your numbers.
 
-## Run it
-Open index.html in a browser, or host free on GitHub Pages:
-Settings → Pages → Deploy from branch → main / root.
-GitHub shows your site's address on the Pages settings screen.
+Live demo: https://muse.ai/s/push-up-tracker-demo-page-xtc6xx6xx7bw4xf/qDCSPZPbLwPXKd3-tYsE9XPMP-9V1-8Uh0QsXU98E3g
+Repo: https://github.com/HamHockHQ/ten-thousand-things
+Join Muse: https://muse.ai/join — redeem code A6W679 in Settings
+within 48 hours of joining.
+Tip jar (optional): https://ko-fi.com/tenthousandthings
 
-## Get your own copy instead
-Easiest: paste the one-prompt build from the demo page into Muse
-(or any AI app) and it builds a private, remembering copy for you.
+PROMPT.md in this repo is the CANONICAL build spec (v2, self-contained,
+every link inside it). If any instructions conflict, PROMPT.md wins.
 
-## Support the project
+## Files in this repo
+- README.md — this install guide
+- PROMPT.md — complete one-prompt build spec + short bootstrap prompt
+- tracker.html — the real standalone tracker: one self-contained HTML
+  file, starts empty, saves in your browser's localStorage
+- index.html — the demo / get-a-copy page (sample data; for trying
+  and sharing, not for logging your own sets)
+
+## Get your own copy — three ways
+
+### 1. GitHub: fork it and run it (no AI needed)
+Fork this repo, open tracker.html in a browser, and log.
+For phone-as-website: Settings → Pages → deploy from main / root,
+then open …/tracker.html (or rename tracker.html to index.html
+in your fork for the root address).
+
+### 2. Have Muse (or any AI) build it from GitHub
+Send the AI this repo's GitHub URL above, plus the short bootstrap
+prompt from PROMPT.md. It reads README.md, follows PROMPT.md as
+the full spec, and uses tracker.html as the reference build.
+
+### 3. Download the zip and drop it in
+GitHub: Code → Download ZIP, unzip.
+Easiest: open tracker.html and start logging.
+Or drop PROMPT.md / the whole folder into a Muse / ChatGPT /
+Gemini chat with the bootstrap prompt and let the AI build your copy.
+
+No route works? PROMPT.md also contains the complete long prompt:
+copy it, paste it as the first message in any capable AI chat, done.
+It needs no link, file, or demo to work — it says so at the top.
+
+## What's inside
+Opens on Log · five tabs (Today, Log, Progress, Exercises, Reminders)
+· floating Home button · giant rep number + oversized slider +
+quick chips incl. ★ suggestion + huge LOG button · Copy last set ·
+double-tap to log · per-exercise targets · max-set charts, streaks,
+badges, Shake It Up · snooze slider + day/week mutes · adjustable
+day-end (10 PM default) · smart suggested sets · Export/Import.
+
+## Standalone-file note
+tracker.html keeps data in that browser's localStorage: private to
+that device/browser, no sync between phone and laptop. For sync +
+scheduled reminders, build your copy in Muse instead (way 2).
+
+## Support
 Free forever. If it earns its keep, buy a smoothie ($3) —
 https://ko-fi.com/tenthousandthings</textarea>
     </div>
@@ -592,6 +750,28 @@ https://ko-fi.com/tenthousandthings</textarea>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
+/* ============================================================
+   OWNER CONSTANTS — single source of truth.
+   REPO_URL: the published GitHub repo (live).
+   Every GitHub link, the bootstrap prompt, and the README
+   snippet on this page are built from REPO_URL below, and
+   every demo link should match DEMO_URL. DEMO_URL is live.
+   ============================================================ */
+var REPO_URL = "https://github.com/HamHockHQ/ten-thousand-things";
+var DEMO_URL = "https://muse.ai/s/push-up-tracker-demo-page-xtc6xx6xx7bw4xf/qDCSPZPbLwPXKd3-tYsE9XPMP-9V1-8Uh0QsXU98E3g";
+(function applyOwnerUrls(){
+  try {
+    var repoLink = document.getElementById("repoLink");
+    if (repoLink) repoLink.href = REPO_URL;
+    var dlTracker = document.getElementById("downloadTrackerLink");
+    if (dlTracker) dlTracker.href = REPO_URL + "/blob/main/tracker.html";
+    var dlZip = document.getElementById("downloadZipLink");
+    if (dlZip) dlZip.href = REPO_URL + "/archive/refs/heads/main.zip";
+    var repoLabel = document.getElementById("repoUrlLabel");
+    if (repoLabel) repoLabel.textContent = REPO_URL;
+  } catch (e) {}
+})();
+
 /* ============================================================
    Tip link — live on Ko-fi.
    ============================================================ */
