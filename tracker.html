@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ten Thousand Things — Push-up Challenge Tracker</title>
+<style>
+  :root{
+    --bg:#0f1419; --card:#1a222c; --card2:#222d3a; --ink:#f2f5f7; --muted:#9fb0bf;
+    --accent:#35c759; --accent2:#ffb340; --danger:#ff5a52; --line:#2c3947;
+    --radius:16px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding-bottom:110px; /* room for floating Home + tab bar */
+  }
+  header{padding:18px 16px 6px; text-align:center;}
+  header h1{margin:0; font-size:24px; letter-spacing:.3px;}
+  header .sub{color:var(--muted); font-size:14px; margin-top:4px;}
+  #globalBanner{display:none; margin:10px 16px 0; background:#3a2f14; color:#ffd97a;
+    border:1px solid #6b5518; padding:10px 12px; border-radius:12px; font-size:14px; text-align:center;}
+  main{max-width:640px; margin:0 auto; padding:8px 14px 20px;}
+  .tabpage{display:none;}
+  .tabpage.active{display:block;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px; margin:12px 0;}
+  .card h2{margin:0 0 10px; font-size:18px;}
+  .card h3{margin:14px 0 8px; font-size:16px;}
+  .muted{color:var(--muted);} .small{font-size:13px;} .center{text-align:center;}
+
+  /* ---------- Log tab ---------- */
+  .chips{display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 4px;}
+  .chip{border:1px solid var(--line); background:var(--card2); color:var(--ink);
+    border-radius:999px; padding:10px 16px; font-size:16px; min-height:44px; cursor:pointer;}
+  .chip.active{background:var(--accent); border-color:var(--accent); color:#06280f; font-weight:700;}
+  .chip.star{background:#3a2f14; border-color:#6b5518; color:#ffd97a;}
+  #bigNumber{font-size:104px; line-height:1; font-weight:800; text-align:center;
+    margin:10px 0 2px; user-select:none; cursor:pointer;}
+  #bigExercise{text-align:center; color:var(--muted); font-size:17px; margin-bottom:6px;}
+  input[type=range].bigslider{width:100%; height:48px; background:transparent; cursor:pointer; margin:6px 0;}
+  input[type=range].bigslider::-webkit-slider-runnable-track{height:16px; border-radius:8px; background:var(--card2);}
+  input[type=range].bigslider::-webkit-slider-thumb{-webkit-appearance:none; appearance:none;
+    width:44px; height:44px; border-radius:50%; background:var(--accent); margin-top:-14px;
+    border:3px solid #0a2c14; box-shadow:0 2px 8px rgba(0,0,0,.5);}
+  input[type=range].bigslider::-moz-range-track{height:16px; border-radius:8px; background:var(--card2);}
+  input[type=range].bigslider::-moz-range-thumb{width:44px; height:44px; border-radius:50%;
+    background:var(--accent); border:3px solid #0a2c14;}
+  input[type=range].normalslider{width:100%; height:36px; cursor:pointer;}
+  .btn{display:block; width:100%; border:none; border-radius:14px; padding:16px;
+    font-size:19px; font-weight:700; min-height:56px; cursor:pointer; margin:10px 0;
+    background:var(--card2); color:var(--ink); border:1px solid var(--line);}
+  .btn.primary{background:var(--accent); color:#06280f; border-color:var(--accent); font-size:22px; min-height:68px;}
+  .btn.warn{background:#3a2f14; color:#ffd97a; border-color:#6b5518;}
+  .btn.danger{background:transparent; color:var(--danger); border-color:var(--danger);}
+  .btn:disabled{opacity:.45; cursor:default;}
+  .btnrow{display:flex; gap:8px;} .btnrow .btn{flex:1;}
+  ul.sets{list-style:none; margin:8px 0; padding:0;}
+  ul.sets li{display:flex; justify-content:space-between; align-items:center;
+    padding:10px 6px; border-bottom:1px solid var(--line); font-size:16px;}
+  ul.sets button{background:none; border:none; color:var(--danger); font-size:20px;
+    min-width:44px; min-height:44px; cursor:pointer;}
+
+  /* ---------- Today / stats ---------- */
+  .bignums{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+  .bignum{background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 6px; text-align:center;}
+  .bignum .n{font-size:34px; font-weight:800;}
+  .bignum .l{color:var(--muted); font-size:12.5px; margin-top:4px;}
+  .statgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .stat{background:var(--card2); border-radius:12px; padding:12px; text-align:center;}
+  .stat .n{font-size:24px; font-weight:700;} .stat .l{color:var(--muted); font-size:13px;}
+  .bar{height:16px; background:var(--card2); border-radius:8px; overflow:hidden; margin:10px 0 4px;}
+  .bar > div{height:100%; background:var(--accent); width:0%;}
+  .pace{font-size:17px; text-align:center; padding:6px;}
+  .badges{display:flex; flex-wrap:wrap; gap:8px;}
+  .badge{border-radius:999px; padding:8px 14px; font-size:14px; border:1px solid var(--line);
+    background:var(--card2); color:var(--muted);}
+  .badge.earned{background:#12351d; border-color:var(--accent); color:#b9f5c9;}
+  table.analytics{width:100%; border-collapse:collapse; font-size:15px;}
+  table.analytics td{padding:7px 4px; border-bottom:1px solid var(--line);}
+  table.analytics td:last-child{text-align:right; font-weight:700;}
+
+  /* ---------- Forms ---------- */
+  label.field{display:block; font-size:14px; color:var(--muted); margin:10px 0 4px;}
+  input[type=text], input[type=number]{width:100%; padding:12px; font-size:17px;
+    border-radius:10px; border:1px solid var(--line); background:var(--card2); color:var(--ink); min-height:48px;}
+  .targetedit{display:flex; gap:8px; align-items:center;}
+  .targetedit input{flex:1;}
+  .targetedit button{flex:0 0 auto; width:auto; padding:12px 16px; margin:0; min-height:48px; font-size:16px;}
+
+  /* ---------- Floating Home + tab bar ---------- */
+  #homeBtn{position:fixed; right:16px; bottom:92px; z-index:60;
+    background:var(--accent); color:#06280f; border:none; border-radius:999px;
+    padding:16px 22px; font-size:19px; font-weight:800; min-height:60px; min-width:118px;
+    box-shadow:0 6px 18px rgba(0,0,0,.55); cursor:pointer;}
+  nav#tabbar{position:fixed; left:0; right:0; bottom:0; z-index:50;
+    background:#131a22; border-top:1px solid var(--line);
+    padding-bottom:env(safe-area-inset-bottom); display:flex;}
+  nav#tabbar button{flex:1; background:none; border:none; color:var(--muted);
+    font-size:12px; padding:9px 0 11px; cursor:pointer; min-height:60px;}
+  nav#tabbar button .ico{display:block; font-size:23px; line-height:1.2;}
+  nav#tabbar button.active{color:var(--accent); font-weight:700;}
+  .toast{position:fixed; left:50%; transform:translateX(-50%); bottom:170px; z-index:70;
+    background:var(--accent); color:#06280f; font-weight:700; padding:12px 20px;
+    border-radius:999px; display:none; box-shadow:0 6px 18px rgba(0,0,0,.5);}
+  svg.chart{width:100%; height:auto; background:var(--card2); border-radius:12px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>💪 Ten Thousand Things</h1>
+  <div class="sub" id="headerSub">Push-up challenge tracker</div>
+</header>
+<div id="globalBanner"></div>
+
+<main>
+  <!-- ================= TODAY ================= -->
+  <section class="tabpage" id="page-today">
+    <div class="bignums">
+      <div class="bignum"><div class="n" id="leftToday">0</div><div class="l">Left today</div></div>
+      <div class="bignum"><div class="n" id="leftChallenge">0</div><div class="l">Left in the challenge</div></div>
+      <div class="bignum"><div class="n" id="paceNum">0</div><div class="l">Ahead / behind pace</div></div>
+    </div>
+    <div class="card">
+      <div class="bar"><div id="progressFill"></div></div>
+      <div class="center muted" id="progressLabel">0%</div>
+      <div class="pace" id="paceText"></div>
+    </div>
+    <div class="card">
+      <div class="statgrid">
+        <div class="stat"><div class="n" id="statToday">0</div><div class="l">Today — push-ups</div></div>
+        <div class="stat"><div class="n" id="statTotal">0</div><div class="l">All-time push-ups</div></div>
+        <div class="stat"><div class="n" id="statStreak">0</div><div class="l">Day streak</div></div>
+        <div class="stat"><div class="n" id="statMax">0</div><div class="l">Max set</div></div>
+      </div>
+      <p class="center muted" id="firstRunToday"></p>
+    </div>
+  </section>
+
+  <!-- ================= LOG ================= -->
+  <section class="tabpage" id="page-log">
+    <div class="card" id="logCard">
+      <div class="chips" id="exerciseChips"></div>
+      <div id="bigNumber" title="Double-tap to log">10</div>
+      <div id="bigExercise">push-ups</div>
+      <input type="range" class="bigslider" id="repSlider" min="0" max="60" step="1" value="10" aria-label="Reps">
+      <div class="chips" id="quickChips"></div>
+      <button class="btn primary" id="logBtn">LOG 10 Push-ups</button>
+      <button class="btn" id="copyLastBtn">Copy last set</button>
+      <p class="small muted center">Tip: double-tap the big number — or double-tap anywhere on this card — to log instantly.</p>
+    </div>
+    <div class="card">
+      <h2>🎲 Shake It Up</h2>
+      <p id="shakeText" class="muted">Deal yourself a random mini-challenge.</p>
+      <div class="btnrow">
+        <button class="btn" id="shakeBtn">Shake It Up</button>
+        <button class="btn" id="shakeAcceptBtn" disabled>Accept</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Recent sets</h2>
+      <ul class="sets" id="recentSets"></ul>
+    </div>
+  </section>
+
+  <!-- ================= PROGRESS ================= -->
+  <section class="tabpage" id="page-progress">
+    <div class="card">
+      <h2>Max set</h2>
+      <p><strong id="maxRecord">0</strong> <span class="muted" id="maxRecordWhen"></span></p>
+      <h3>Max set by day</h3>
+      <div id="maxChart"></div>
+      <h3>Daily totals (push-ups)</h3>
+      <div id="totalChart"></div>
+    </div>
+    <div class="card">
+      <h2>Weekly analytics</h2>
+      <table class="analytics" id="analyticsTable"></table>
+    </div>
+    <div class="card">
+      <h2>Badges</h2>
+      <div class="badges" id="badgeRow"></div>
+    </div>
+    <div class="card">
+      <h2>Your data</h2>
+      <p class="small muted">Everything lives in this browser (localStorage). Export a backup, or import one to move devices.</p>
+      <div class="btnrow">
+        <button class="btn" id="exportBtn">Export JSON</button>
+        <button class="btn" id="importBtn">Import JSON</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json,.json" style="display:none">
+    </div>
+  </section>
+
+  <!-- ================= EXERCISES ================= -->
+  <section class="tabpage" id="page-exercises">
+    <div id="exerciseCards"></div>
+    <div class="card">
+      <h2>+ New exercise</h2>
+      <label class="field" for="newExName">Name</label>
+      <input type="text" id="newExName" placeholder="e.g. Lunges">
+      <label class="field" for="newExTarget">Daily target (optional)</label>
+      <input type="number" id="newExTarget" min="0" placeholder="0">
+      <button class="btn primary" id="addExerciseBtn">Add exercise</button>
+    </div>
+  </section>
+
+  <!-- ================= REMINDERS ================= -->
+  <section class="tabpage" id="page-reminders">
+    <div class="card">
+      <h2>Suggested set sizes</h2>
+      <div id="suggestions"></div>
+      <p class="small muted">Suggested = what's left of today's target ÷ the 20-minute check-ins remaining until your day-end (snooze time excluded).</p>
+      <p><strong>Next check-in in:</strong> <span id="countdown">—</span></p>
+      <p class="small muted">Honest note: this standalone file can only count down while it's open — it can't send real reminders or notifications when closed. Keep the tab open, or use the countdown as your guide.</p>
+    </div>
+    <div class="card">
+      <h2>Snooze &amp; mute</h2>
+      <div id="muteBanner"></div>
+      <label class="field" for="snoozeSlider">Snooze length: <strong id="snoozeLabel">60 min</strong></label>
+      <input type="range" class="normalslider" id="snoozeSlider" min="15" max="720" step="15" value="60">
+      <button class="btn warn" id="snoozeBtn">Snooze reminders</button>
+      <div class="btnrow">
+        <button class="btn" id="muteDayBtn">Mute for today</button>
+        <button class="btn" id="muteWeekBtn">Mute for a week</button>
+      </div>
+      <button class="btn danger" id="unmuteBtn">Cancel snooze / mute</button>
+    </div>
+    <div class="card">
+      <h2>Day-end</h2>
+      <label class="field" for="dayEndSlider">Reminders &amp; pace run until: <strong id="dayEndLabel">10:00 PM</strong></label>
+      <input type="range" class="normalslider" id="dayEndSlider" min="720" max="1560" step="15" value="1320">
+      <p class="small muted">Slide past midnight if you're up late — it resets to 10:00 PM on a new day.</p>
+    </div>
+  </section>
+</main>
+
+<button id="homeBtn" aria-label="Home">🏠 Home</button>
+<div class="toast" id="toast"></div>
+
+<nav id="tabbar">
+  <button data-tab="today"><span class="ico">🏠</span>Today</button>
+  <button data-tab="log"><span class="ico">➕</span>Log</button>
+  <button data-tab="progress"><span class="ico">📈</span>Progress</button>
+  <button data-tab="exercises"><span class="ico">🏋️</span>Exercises</button>
+  <button data-tab="reminders"><span class="ico">⏰</span>Reminders</button>
+</nav>
+
+<script>
+/* ================================================================
+   CONFIG — edit these defaults to make the challenge yours.
+   ================================================================ */
+const CONFIG = {
+  goal: 10000,                 // total push-ups for the challenge
+  startDate: '2026-11-11',     // first day of the challenge (YYYY-MM-DD)
+  endDate: '2026-12-31',       // last day of the challenge
+  dailyTarget: 200,            // push-ups per day
+  activeStartHour: 11,         // reminders / pace window opens (11:00)
+  activeEndHour: 22,           // default day-end (22:00 = 10:00 PM)
+  checkinIntervalMinutes: 20,  // minutes between check-ins
+  timezone: 'local'            // uses the device's local timezone
+};
+
+/* ---------------- Storage (one localStorage key) ---------------- */
+const STORAGE_KEY = 'tenthousandthings.v1';
+const BUILTINS = [
+  { slug: 'pushups', name: 'Push-ups', custom: false, dailyTarget: CONFIG.dailyTarget },
+  { slug: 'squats',  name: 'Squats',   custom: false, dailyTarget: 0 },
+  { slug: 'situps',  name: 'Sit-ups',  custom: false, dailyTarget: 0 }
+];
+
+function defaultData() {
+  return {
+    exercises: JSON.parse(JSON.stringify(BUILTINS)),
+    logs: [],                                   // {id, exercise, reps, date, ts}
+    settings: { dayEndMinutes: CONFIG.activeEndHour * 60, dayEndDate: todayStr() },
+    mute: { mode: null, until: 0 }              // mode: 'snooze' | 'day' | 'week'
+  };
+}
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultData();
+    const d = JSON.parse(raw);
+    if (!d.exercises || !d.logs) return defaultData();
+    d.settings = d.settings || { dayEndMinutes: CONFIG.activeEndHour * 60, dayEndDate: todayStr() };
+    d.mute = d.mute || { mode: null, until: 0 };
+    return d;
+  } catch (e) { return defaultData(); }
+}
+function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+
+let data = loadData();
+// Day-end resets to the default on a new day.
+if (data.settings.dayEndDate !== todayStr()) {
+  data.settings.dayEndMinutes = CONFIG.activeEndHour * 60;
+  data.settings.dayEndDate = todayStr();
+  saveData();
+}
+// Clear an expired mute.
+if (data.mute.until && Date.now() > data.mute.until) { data.mute = { mode: null, until: 0 }; saveData(); }
+
+/* ---------------- Date helpers (local time) ---------------- */
+function todayStr() { return dateStr(new Date()); }
+function dateStr(d) {
+  const p = n => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+function parseDate(s) { const a = s.split('-'); return new Date(+a[0], +a[1] - 1, +a[2]); }
+function addDays(s, n) { const d = parseDate(s); d.setDate(d.getDate() + n); return dateStr(d); }
+function daysBetween(a, b) { return Math.round((parseDate(b) - parseDate(a)) / 86400000); }
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtTime(mins) {
+  let m = ((mins % 1440) + 1440) % 1440, h = Math.floor(m / 60), mm = m % 60;
+  const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+  return h + ':' + String(mm).padStart(2, '0') + ' ' + ap + (mins >= 1440 ? ' (next day)' : '');
+}
+
+/* ---------------- Stats ---------------- */
+function logsFor(slug) { return data.logs.filter(l => l.exercise === slug); }
+function sum(arr) { return arr.reduce((a, l) => a + l.reps, 0); }
+function todayDone(slug) { return sum(logsFor(slug).filter(l => l.date === todayStr())); }
+function totalDone(slug) { return sum(logsFor(slug)); }
+function maxSet(slug) {
+  const ls = logsFor(slug); if (!ls.length) return { reps: 0, date: null };
+  return ls.reduce((best, l) => l.reps > best.reps ? { reps: l.reps, date: l.date } : best, { reps: 0, date: null });
+}
+function dailyTotals(slug) { // {date: total}
+  const map = {};
+  logsFor(slug).forEach(l => { map[l.date] = (map[l.date] || 0) + l.reps; });
+  return map;
+}
+function streakDays() {
+  const days = new Set(logsFor('pushups').filter(l => l.reps > 0).map(l => l.date));
+  let streak = 0, cursor = todayStr();
+  if (!days.has(cursor)) cursor = addDays(cursor, -1); // today not started yet doesn't break it
+  while (days.has(cursor)) { streak++; cursor = addDays(cursor, -1); }
+  return streak;
+}
+function lastSet(slug) {
+  const ls = logsFor(slug);
+  return ls.length ? ls[ls.length - 1] : null;
+}
+
+/* Suggested set size: reps remaining today / check-ins remaining until day-end (snooze excluded). */
+function suggestedSet(slug) {
+  const ex = data.exercises.find(e => e.slug === slug);
+  if (!ex || !ex.dailyTarget) return 0;
+  const remaining = ex.dailyTarget - todayDone(slug);
+  if (remaining <= 0) return 0;
+  const now = new Date(), nowMin = now.getHours() * 60 + now.getMinutes();
+  let activeMin = data.settings.dayEndMinutes - nowMin;
+  if (muteActive() && data.mute.mode === 'snooze') {
+    activeMin -= Math.ceil((data.mute.until - Date.now()) / 60000);
+  }
+  const slots = Math.max(1, Math.ceil(activeMin / CONFIG.checkinIntervalMinutes));
+  return Math.ceil(remaining / slots);
+}
+function muteActive() { return data.mute.mode && Date.now() < data.mute.until; }
+
+/* ---------------- UI state ---------------- */
+let currentTab = 'log';               // app opens on Log
+let selectedExercise = 'pushups';
+let currentShake = null;
+let lastLogAt = 0;                    // double-tap guard timestamp
+
+const $ = id => document.getElementById(id);
+
+function showTab(name) {
+  currentTab = name;
+  document.querySelectorAll('.tabpage').forEach(p => p.classList.remove('active'));
+  $('page-' + name).classList.add('active');
+  document.querySelectorAll('#tabbar button').forEach(b =>
+    b.classList.toggle('active', b.dataset.tab === name));
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('#tabbar button').forEach(b =>
+  b.addEventListener('click', () => showTab(b.dataset.tab)));
+$('homeBtn').addEventListener('click', () => showTab('today')); // floating Home -> Today
+
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 1600);
+}
+
+/* ---------------- Logging ---------------- */
+function logSet(slug, reps) {
+  reps = parseInt(reps, 10);
+  if (!reps || reps <= 0) { toast('Set the slider above 0 first'); return; }
+  data.logs.push({ id: Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+                   exercise: slug, reps: reps, date: todayStr(), ts: Date.now() });
+  saveData(); render();
+  const ex = data.exercises.find(e => e.slug === slug);
+  toast('Logged ' + reps + ' ' + (ex ? ex.name : slug) + ' ✓');
+}
+function guardedLog() {
+  // Guard against accidental double-logging of the same gesture:
+  // one double-tap fires handlers on both the number and the card — log exactly once.
+  const now = Date.now();
+  if (now - lastLogAt < 600) return;
+  lastLogAt = now;
+  logSet(selectedExercise, $('repSlider').value);
+}
+
+$('repSlider').addEventListener('input', e => {
+  $('bigNumber').textContent = e.target.value;
+  updateLogButton();
+});
+$('logBtn').addEventListener('click', () => logSet(selectedExercise, $('repSlider').value));
+$('copyLastBtn').addEventListener('click', () => {
+  const last = lastSet(selectedExercise);
+  if (last) logSet(selectedExercise, last.reps);
+});
+/* double-tap handlers */
+$('bigNumber').addEventListener('dblclick', e => { e.stopPropagation(); guardedLog(); });
+$('logCard').addEventListener('dblclick', e => {
+  if (e.target.closest('button, input, select, a, .chip')) return; // not on controls
+  guardedLog();
+});
+
+function updateLogButton() {
+  const ex = data.exercises.find(e => e.slug === selectedExercise);
+  $('logBtn').textContent = 'LOG ' + $('repSlider').value + ' ' + (ex ? ex.name : '');
+  $('bigExercise').textContent = ex ? ex.name.toLowerCase() : '';
+  const last = lastSet(selectedExercise);
+  $('copyLastBtn').textContent = last ? ('Copy last set — log ' + last.reps + ' again') : 'Copy last set — no sets yet';
+  $('copyLastBtn').disabled = !last;
+}
+
+/* ---------------- Shake It Up ---------------- */
+const SHAKES = [
+  'Drop and do 5 right now — no warm-up, just go.',
+  'Beat your last set by 1 rep.',
+  'Do a slow set: 3 seconds down, 3 seconds up, as many as you can.',
+  'Pyramid: 5, then 10, then 15, then 10, then 5 — short rests.',
+  'Diamond push-ups — hands together — as many as you can.',
+  'Hold the bottom of a push-up for 20 seconds, then push out 5.',
+  'Wide-grip set to failure (safely!).',
+  '1-minute challenge: as many clean reps as you can in 60 seconds.',
+  'Do your suggested set size — twice, back to back with 30s rest.',
+  'Wall push-ups × 25 if your arms are cooked — movement counts.'
+];
+$('shakeBtn').addEventListener('click', () => {
+  currentShake = SHAKES[Math.floor(Math.random() * SHAKES.length)];
+  $('shakeText').textContent = '🎲 ' + currentShake;
+  $('shakeAcceptBtn').disabled = false;
+});
+$('shakeAcceptBtn').addEventListener('click', () => {
+  if (!currentShake) return;
+  $('shakeText').textContent = '✅ Accepted: ' + currentShake + ' — log it above when you\'re done!';
+  $('shakeAcceptBtn').disabled = true;
+});
+
+/* ---------------- Render ---------------- */
+function render() {
+  renderHeader(); renderToday(); renderLog(); renderProgress(); renderExercises(); renderReminders();
+}
+function renderHeader() {
+  const t = totalDone('pushups');
+  $('headerSub').textContent = t.toLocaleString() + ' of ' + CONFIG.goal.toLocaleString() +
+    ' push-ups · ' + todayStr();
+  const b = $('globalBanner');
+  if (muteActive()) {
+    b.style.display = 'block';
+    b.textContent = '🔕 Reminders ' + (data.mute.mode === 'snooze' ? 'snoozed' : 'muted') +
+      ' until ' + new Date(data.mute.until).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) +
+      ' on ' + new Date(data.mute.until).toLocaleDateString();
+  } else b.style.display = 'none';
+}
+function renderToday() {
+  const today = todayDone('pushups'), total = totalDone('pushups');
+  const leftToday = Math.max(0, CONFIG.dailyTarget - today);
+  const leftYear = Math.max(0, CONFIG.goal - total);
+  const totalDays = daysBetween(CONFIG.startDate, CONFIG.endDate) + 1;
+  const elapsed = Math.min(totalDays, Math.max(0, daysBetween(CONFIG.startDate, todayStr()) + 1));
+  const expected = elapsed * CONFIG.dailyTarget;
+  const delta = total - expected;
+  $('leftToday').textContent = leftToday.toLocaleString();
+  $('leftChallenge').textContent = leftYear.toLocaleString();
+  $('paceNum').textContent = (delta >= 0 ? '+' : '') + delta.toLocaleString();
+  $('paceText').textContent = delta >= 0
+    ? '🎉 You are ' + delta.toLocaleString() + ' push-ups ahead of pace. Keep it rolling.'
+    : 'You are ' + Math.abs(delta).toLocaleString() + ' push-ups behind pace — ' +
+      Math.abs(delta).toLocaleString() + ' extra spread over the remaining days closes the gap.';
+  const pct = Math.min(100, (total / CONFIG.goal) * 100);
+  $('progressFill').style.width = pct + '%';
+  $('progressLabel').textContent = total.toLocaleString() + ' / ' + CONFIG.goal.toLocaleString() +
+    ' — ' + pct.toFixed(1) + '%';
+  $('statToday').textContent = today.toLocaleString();
+  $('statTotal').textContent = total.toLocaleString();
+  $('statStreak').textContent = streakDays();
+  $('statMax').textContent = maxSet('pushups').reps;
+  $('firstRunToday').textContent = data.logs.length === 0
+    ? 'Nothing logged yet — head to the Log tab and do your first set. 💪' : '';
+}
+function renderLog() {
+  // Exercise switcher chips
+  $('exerciseChips').innerHTML = data.exercises.map(ex =>
+    '<button class="chip' + (ex.slug === selectedExercise ? ' active' : '') +
+    '" data-ex="' + esc(ex.slug) + '">' + esc(ex.name) + '</button>').join('');
+  $('exerciseChips').querySelectorAll('button').forEach(b =>
+    b.addEventListener('click', () => { selectedExercise = b.dataset.ex; renderLog(); }));
+  // Quick chips + star chip with the current suggestion
+  const sug = suggestedSet(selectedExercise);
+  const quick = [5, 10, 15, 20, 25].map(n =>
+    '<button class="chip" data-q="' + n + '">' + n + '</button>').join('') +
+    (sug > 0 ? '<button class="chip star" data-q="' + sug + '">★ ' + sug + '</button>' : '');
+  $('quickChips').innerHTML = quick;
+  $('quickChips').querySelectorAll('button').forEach(b =>
+    b.addEventListener('click', () => {
+      $('repSlider').value = Math.min(60, +b.dataset.q);
+      $('bigNumber').textContent = $('repSlider').value;
+      updateLogButton();
+    }));
+  if ($('bigNumber').textContent !== $('repSlider').value)
+    $('bigNumber').textContent = $('repSlider').value;
+  updateLogButton();
+  // Recent sets (all exercises, newest first) with delete
+  const recent = data.logs.slice(-12).reverse();
+  $('recentSets').innerHTML = recent.length ? recent.map(l => {
+    const ex = data.exercises.find(e => e.slug === l.exercise);
+    return '<li><span>' + l.reps + ' × ' + esc(ex ? ex.name : l.exercise) +
+      ' <span class="muted small">' + l.date + '</span></span>' +
+      '<button data-del="' + l.id + '" aria-label="Delete set">🗑</button></li>';
+  }).join('') : '<li class="muted">No sets yet — log your first one above.</li>';
+  $('recentSets').querySelectorAll('button[data-del]').forEach(b =>
+    b.addEventListener('click', () => {
+      data.logs = data.logs.filter(l => l.id !== b.dataset.del);
+      saveData(); render();
+    }));
+}
+function barChartSVG(pairs, color) { // pairs: [{label, value}]
+  if (!pairs.length) return '<p class="muted">No data yet.</p>';
+  const max = Math.max(1, ...pairs.map(p => p.value));
+  const w = 560, h = 150, bw = Math.max(8, Math.floor(w / pairs.length) - 6);
+  let bars = '';
+  pairs.forEach((p, i) => {
+    const bh = Math.round((p.value / max) * (h - 40));
+    const x = 8 + i * (w / pairs.length), y = h - 22 - bh;
+    bars += '<rect x="' + x + '" y="' + y + '" width="' + bw + '" height="' + bh +
+      '" rx="3" fill="' + color + '"></rect>' +
+      '<text x="' + (x + bw / 2) + '" y="' + (y - 4) + '" fill="#f2f5f7" font-size="11" text-anchor="middle">' +
+      p.value + '</text>' +
+      '<text x="' + (x + bw / 2) + '" y="' + (h - 6) + '" fill="#9fb0bf" font-size="9" text-anchor="middle">' +
+      p.label + '</text>';
+  });
+  return '<svg class="chart" viewBox="0 0 ' + w + ' ' + h + '">' + bars + '</svg>';
+}
+function renderProgress() {
+  const mx = maxSet('pushups');
+  $('maxRecord').textContent = mx.reps + ' reps';
+  $('maxRecordWhen').textContent = mx.date ? 'on ' + mx.date : '(no sets yet)';
+  // Charts over the last 14 days
+  const totals = dailyTotals('pushups');
+  const days = [], maxPairs = [], totalPairs = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = addDays(todayStr(), -i);
+    days.push(d);
+    const dayLogs = logsFor('pushups').filter(l => l.date === d);
+    maxPairs.push({ label: d.slice(5), value: dayLogs.length ? Math.max(...dayLogs.map(l => l.reps)) : 0 });
+    totalPairs.push({ label: d.slice(5), value: totals[d] || 0 });
+  }
+  $('maxChart').innerHTML = barChartSVG(maxPairs, '#ffb340');
+  $('totalChart').innerHTML = barChartSVG(totalPairs, '#35c759');
+  // Weekly analytics
+  const last7 = days.slice(-7).reduce((a, d) => a + (totals[d] || 0), 0);
+  const prev7dates = []; for (let i = 14; i >= 8; i--) prev7dates.push(addDays(todayStr(), -i));
+  const prev7 = prev7dates.reduce((a, d) => a + (totals[d] || 0), 0);
+  const allDays = Object.keys(totals);
+  const best = allDays.length ? Math.max(...allDays.map(d => totals[d])) : 0;
+  const avg = allDays.length ? (totalDone('pushups') / allDays.length) : 0;
+  $('analyticsTable').innerHTML =
+    '<tr><td>Last 7 days</td><td>' + last7.toLocaleString() + '</td></tr>' +
+    '<tr><td>Previous 7 days</td><td>' + prev7.toLocaleString() + '</td></tr>' +
+    '<tr><td>This week vs last week</td><td>' + (last7 - prev7 >= 0 ? '+' : '') + (last7 - prev7) + '</td></tr>' +
+    '<tr><td>Best day</td><td>' + best.toLocaleString() + '</td></tr>' +
+    '<tr><td>Average per active day</td><td>' + avg.toFixed(1) + '</td></tr>';
+  // Badges
+  const total = totalDone('pushups'), streak = streakDays();
+  const perfectDay = allDays.some(d => totals[d] >= CONFIG.dailyTarget);
+  const badges = [
+    { label: '💯 First 100', earned: total >= 100 },
+    { label: '🏅 1,000 total', earned: total >= 1000 },
+    { label: '🎖️ 5,000 total', earned: total >= 5000 },
+    { label: '🏆 10,000 total', earned: total >= 10000 },
+    { label: '🚀 Max set 30+', earned: mx.reps >= 30 },
+    { label: '⭐ Max set 50+', earned: mx.reps >= 50 },
+    { label: '🎯 Perfect 200 day', earned: perfectDay },
+    { label: '🔥 3-day streak', earned: streak >= 3 },
+    { label: '🔥 7-day streak', earned: streak >= 7 },
+    { label: '🔥 14-day streak', earned: streak >= 14 },
+    { label: '🔥 30-day streak', earned: streak >= 30 }
+  ];
+  $('badgeRow').innerHTML = badges.map(b =>
+    '<span class="badge' + (b.earned ? ' earned' : '') + '">' + b.label + '</span>').join('');
+}
+function renderExercises() {
+  $('exerciseCards').innerHTML = data.exercises.map(ex => {
+    const recent = logsFor(ex.slug).slice(-3).reverse();
+    return '<div class="card"><h2>' + esc(ex.name) + '</h2>' +
+      '<div class="statgrid">' +
+      '<div class="stat"><div class="n">' + todayDone(ex.slug) + '</div><div class="l">Today</div></div>' +
+      '<div class="stat"><div class="n">' + totalDone(ex.slug) + '</div><div class="l">All-time</div></div>' +
+      '<div class="stat"><div class="n">' + maxSet(ex.slug).reps + '</div><div class="l">Max set</div></div>' +
+      '<div class="stat"><div class="n">' + (ex.dailyTarget || 0) + '</div><div class="l">Daily target</div></div>' +
+      '</div>' +
+      '<label class="field">Daily target</label><div class="targetedit">' +
+      '<input type="number" min="0" value="' + (ex.dailyTarget || 0) + '" id="target-' + esc(ex.slug) + '">' +
+      '<button class="btn" data-target-save="' + esc(ex.slug) + '">Save</button></div>' +
+      (recent.length ? '<h3>Recent sets</h3><ul class="sets">' + recent.map(l =>
+        '<li><span>' + l.reps + ' reps</span><span class="muted small">' + l.date + '</span></li>').join('') + '</ul>'
+        : '<p class="muted small">No sets yet.</p>') +
+      (ex.custom ? '<button class="btn danger" data-remove="' + esc(ex.slug) + '">Remove exercise</button>' : '') +
+      '</div>';
+  }).join('');
+  $('exerciseCards').querySelectorAll('button[data-target-save]').forEach(b =>
+    b.addEventListener('click', () => {
+      const ex = data.exercises.find(e => e.slug === b.dataset.targetSave);
+      ex.dailyTarget = Math.max(0, parseInt($('target-' + ex.slug).value, 10) || 0);
+      saveData(); render(); toast('Target saved');
+    }));
+  $('exerciseCards').querySelectorAll('button[data-remove]').forEach(b =>
+    b.addEventListener('click', () => {
+      const slug = b.dataset.remove;
+      data.exercises = data.exercises.filter(e => e.slug !== slug);
+      data.logs = data.logs.filter(l => l.exercise !== slug);
+      if (selectedExercise === slug) selectedExercise = 'pushups';
+      saveData(); render(); toast('Exercise removed');
+    }));
+}
+$('addExerciseBtn').addEventListener('click', () => {
+  const name = $('newExName').value.trim();
+  if (!name) { toast('Give the exercise a name first'); return; }
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now().toString(36);
+  data.exercises.push({ slug: slug, name: name, custom: true,
+    dailyTarget: Math.max(0, parseInt($('newExTarget').value, 10) || 0) });
+  $('newExName').value = ''; $('newExTarget').value = '';
+  saveData(); render(); toast('Added ' + name);
+});
+
+/* ---------------- Reminders ---------------- */
+function renderReminders() {
+  const targeted = data.exercises.filter(e => e.dailyTarget > 0);
+  $('suggestions').innerHTML = targeted.length ? targeted.map(ex => {
+    const left = Math.max(0, ex.dailyTarget - todayDone(ex.slug));
+    const s = suggestedSet(ex.slug);
+    return '<p><strong>' + esc(ex.name) + ':</strong> ' +
+      (left === 0 ? 'target reached today 🎉' : ('about ' + s + ' per check-in (' + left + ' left today)')) + '</p>';
+  }).join('') : '<p class="muted">No daily targets set — add one on the Exercises tab.</p>';
+  const b = $('muteBanner');
+  if (muteActive()) {
+    b.innerHTML = '<p>🔕 <strong>' + (data.mute.mode === 'snooze' ? 'Snoozed' : 'Muted (' + data.mute.mode + ')') +
+      '</strong> until ' + new Date(data.mute.until).toLocaleString() + '</p>';
+  } else b.innerHTML = '<p class="muted">Reminders are on.</p>';
+  $('dayEndSlider').value = data.settings.dayEndMinutes;
+  $('dayEndLabel').textContent = fmtTime(data.settings.dayEndMinutes);
+  updateCountdown();
+}
+function updateCountdown() {
+  const el = $('countdown'); if (!el) return;
+  const now = new Date();
+  const secsNow = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+  const interval = CONFIG.checkinIntervalMinutes * 60;
+  let remain = interval - (secsNow % interval);
+  if (remain === interval) remain = 0;
+  el.textContent = Math.floor(remain / 60) + 'm ' + String(remain % 60).padStart(2, '0') + 's';
+}
+setInterval(updateCountdown, 1000);
+
+$('snoozeSlider').addEventListener('input', e => {
+  const v = +e.target.value;
+  $('snoozeLabel').textContent = v >= 60 ? Math.floor(v / 60) + 'h ' + (v % 60 ? (v % 60) + 'm' : '').trim() : v + ' min';
+});
+$('snoozeBtn').addEventListener('click', () => {
+  const mins = +$('snoozeSlider').value;
+  data.mute = { mode: 'snooze', until: Date.now() + mins * 60000 };
+  saveData(); render(); toast('Snoozed for ' + mins + ' min');
+});
+$('muteDayBtn').addEventListener('click', () => {
+  const end = new Date(); end.setHours(23, 59, 59, 999);
+  data.mute = { mode: 'day', until: end.getTime() };
+  saveData(); render(); toast('Muted for today');
+});
+$('muteWeekBtn').addEventListener('click', () => {
+  data.mute = { mode: 'week', until: Date.now() + 7 * 86400000 };
+  saveData(); render(); toast('Muted for a week');
+});
+$('unmuteBtn').addEventListener('click', () => {
+  data.mute = { mode: null, until: 0 };
+  saveData(); render(); toast('Reminders back on');
+});
+$('dayEndSlider').addEventListener('input', e => {
+  data.settings.dayEndMinutes = +e.target.value;
+  data.settings.dayEndDate = todayStr();
+  saveData();
+  $('dayEndLabel').textContent = fmtTime(data.settings.dayEndMinutes);
+  renderReminders();
+});
+
+/* ---------------- Export / Import JSON ---------------- */
+$('exportBtn').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ten-thousand-things-backup.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+$('importBtn').addEventListener('click', () => $('importFile').click());
+$('importFile').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const d = JSON.parse(r.result);
+      if (!d.exercises || !d.logs) throw new Error('bad file');
+      data = d;
+      data.settings = data.settings || { dayEndMinutes: CONFIG.activeEndHour * 60, dayEndDate: todayStr() };
+      data.mute = data.mute || { mode: null, until: 0 };
+      saveData(); render(); toast('Import complete ✓');
+    } catch (err) { toast('That file could not be imported'); }
+  };
+  r.readAsText(f);
+});
+
+/* ---------------- Go ---------------- */
+render();
+showTab('log'); // open on Log — logging first, always
+</script>
+</body>
+</html>
