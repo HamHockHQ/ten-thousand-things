@@ -15,14 +15,14 @@
   body{
     background:var(--bg); color:var(--ink);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    padding-bottom:110px; /* room for floating Home + tab bar */
+    padding-bottom:120px; /* room for floating Home + tab bar */
   }
   header{padding:18px 16px 6px; text-align:center;}
   header h1{margin:0; font-size:24px; letter-spacing:.3px;}
   header .sub{color:var(--muted); font-size:14px; margin-top:4px;}
   #globalBanner{display:none; margin:10px 16px 0; background:#3a2f14; color:#ffd97a;
     border:1px solid #6b5518; padding:10px 12px; border-radius:12px; font-size:14px; text-align:center;}
-  main{max-width:640px; margin:0 auto; padding:8px 14px 20px;}
+  main{max-width:640px; margin:0 auto; padding:8px 14px 170px;}
   .tabpage{display:none;}
   .tabpage.active{display:block;}
   .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
@@ -32,15 +32,50 @@
   .muted{color:var(--muted);} .small{font-size:13px;} .center{text-align:center;}
 
   /* ---------- Log tab ---------- */
+  .loghead{display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;}
+  .loghead h2{margin:0;}
+  #cogBtn{background:var(--card2); border:1px solid var(--line); color:var(--ink);
+    border-radius:10px; width:44px; height:44px; font-size:20px; cursor:pointer;}
+  #cogPanel{display:none; background:var(--card2); border:1px solid var(--line);
+    border-radius:12px; padding:12px; margin:8px 0 4px;}
+  #cogPanel.open{display:block;}
+  #cogPanel label.gmode{display:flex; gap:10px; align-items:flex-start; padding:9px 6px;
+    border-bottom:1px solid var(--line); cursor:pointer; font-size:15px;}
+  #cogPanel label.gmode:last-of-type{border-bottom:none;}
+  #cogPanel input[type=radio]{width:22px; height:22px; margin-top:1px; accent-color:var(--accent);}
+  #cogPanel .hint{display:block; color:var(--muted); font-size:13px; margin-top:2px;}
+  /* exercise swipe row: favorites first, horizontal scroll */
+  .exrow{display:flex; gap:8px; overflow-x:auto; padding:4px 2px 10px; flex-wrap:nowrap;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+  .exrow::-webkit-scrollbar{display:none;}
+  .exchip{flex:0 0 auto; display:flex; align-items:stretch; border:1px solid var(--line);
+    background:var(--card2); border-radius:999px; overflow:hidden;}
+  .exchip.active{background:var(--accent); border-color:var(--accent);}
+  .exchip button{background:none; border:none; color:var(--ink); cursor:pointer; min-height:44px;}
+  .exchip.active button{color:#06280f;}
+  .exchip .exname{padding:10px 4px 10px 16px; font-size:16px; font-weight:600;}
+  .exchip.active .exname{font-weight:700;}
+  .exchip .exstar{padding:10px 14px 10px 6px; font-size:18px; color:var(--muted);}
+  .exchip .exstar.fav{color:#ffd23f;}
+  .exchip.active .exstar.fav{color:#8a6d00;}
+  .exchip.addnew button{padding:10px 16px; font-size:16px; color:var(--muted);}
   .chips{display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 4px;}
   .chip{border:1px solid var(--line); background:var(--card2); color:var(--ink);
     border-radius:999px; padding:10px 16px; font-size:16px; min-height:44px; cursor:pointer;}
   .chip.active{background:var(--accent); border-color:var(--accent); color:#06280f; font-weight:700;}
   .chip.star{background:#3a2f14; border-color:#6b5518; color:#ffd97a;}
-  #bigNumber{font-size:104px; line-height:1; font-weight:800; text-align:center;
-    margin:10px 0 2px; user-select:none; cursor:pointer;}
-  #bigExercise{text-align:center; color:var(--muted); font-size:17px; margin-bottom:6px;}
-  input[type=range].bigslider{width:100%; height:48px; background:transparent; cursor:pointer; margin:6px 0;}
+  /* big number with hold ring + gesture handling */
+  #bigWrap{position:relative; width:196px; height:196px; margin:6px auto 0;
+    touch-action:pan-y; -webkit-touch-callout:none; user-select:none; -webkit-user-select:none;
+    cursor:pointer; border-radius:50%;}
+  #holdRing{position:absolute; inset:0; transform:rotate(-90deg); pointer-events:none;}
+  #holdRing .track{stroke:var(--card2);}
+  #holdRing .prog{stroke:var(--accent); transition:none;}
+  #bigNumber{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:96px; line-height:1; font-weight:800; text-align:center;}
+  #bigExercise{text-align:center; color:var(--muted); font-size:17px; margin:2px 0 6px;}
+  #cooldownLabel{display:none; text-align:center; color:var(--accent2); font-size:14px; min-height:18px;}
+  input[type=range].bigslider{width:100%; height:48px; background:transparent; cursor:pointer; margin:6px 0 0;}
   input[type=range].bigslider::-webkit-slider-runnable-track{height:16px; border-radius:8px; background:var(--card2);}
   input[type=range].bigslider::-webkit-slider-thumb{-webkit-appearance:none; appearance:none;
     width:44px; height:44px; border-radius:50%; background:var(--accent); margin-top:-14px;
@@ -48,6 +83,8 @@
   input[type=range].bigslider::-moz-range-track{height:16px; border-radius:8px; background:var(--card2);}
   input[type=range].bigslider::-moz-range-thumb{width:44px; height:44px; border-radius:50%;
     background:var(--accent); border:3px solid #0a2c14;}
+  .sliderticks{display:flex; justify-content:space-between; color:var(--muted);
+    font-size:12px; padding:0 6px 2px;}
   input[type=range].normalslider{width:100%; height:36px; cursor:pointer;}
   .btn{display:block; width:100%; border:none; border-radius:14px; padding:16px;
     font-size:19px; font-weight:700; min-height:56px; cursor:pointer; margin:10px 0;
@@ -60,8 +97,32 @@
   ul.sets{list-style:none; margin:8px 0; padding:0;}
   ul.sets li{display:flex; justify-content:space-between; align-items:center;
     padding:10px 6px; border-bottom:1px solid var(--line); font-size:16px;}
-  ul.sets button{background:none; border:none; color:var(--danger); font-size:20px;
+  ul.sets .rowbtns{display:flex; gap:2px;}
+  ul.sets button{background:none; border:none; color:var(--danger); font-size:19px;
     min-width:44px; min-height:44px; cursor:pointer;}
+  ul.sets button.splitbtn{color:var(--accent2); font-size:14px; font-weight:700;}
+  /* collapsible cards (missed sets, recent sets, exercise details) */
+  .collapsehead{display:flex; justify-content:space-between; align-items:center; width:100%;
+    background:none; border:none; color:var(--ink); padding:2px 0; cursor:pointer; min-height:44px;
+    font-size:17px; font-weight:700; text-align:left;}
+  .collapsehead .chev{color:var(--muted); transition:transform .2s;}
+  .collapsehead[aria-expanded="true"] .chev{transform:rotate(180deg);}
+  .collapsebody{display:none;}
+  .collapsebody.open{display:block;}
+  .stepper{display:flex; align-items:center; gap:12px; margin:8px 0;}
+  .stepper button{width:48px; height:48px; border-radius:12px; border:1px solid var(--line);
+    background:var(--card2); color:var(--ink); font-size:22px; cursor:pointer;}
+  .stepper .n{font-size:24px; font-weight:800; min-width:36px; text-align:center;}
+  .flash{color:var(--accent); font-size:15px; min-height:20px; margin-top:6px;}
+  /* tap bursts */
+  .burst{position:fixed; z-index:90; transform:translate(-50%,-50%); pointer-events:none;
+    background:var(--accent); color:#06280f; font-weight:800; font-size:17px;
+    padding:10px 16px; border-radius:999px; box-shadow:0 6px 18px rgba(0,0,0,.5);
+    animation:burstfloat 2.4s ease-out forwards; white-space:nowrap;}
+  .burst.hint{background:var(--card2); color:var(--ink); border:1px solid var(--line);
+    font-weight:600; font-size:14px; animation-duration:2s;}
+  @keyframes burstfloat{0%{opacity:0; margin-top:6px;} 12%{opacity:1;} 70%{opacity:1;}
+    100%{opacity:0; margin-top:-26px;}}
 
   /* ---------- Today / stats ---------- */
   .bignums{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
@@ -83,6 +144,17 @@
   table.analytics td{padding:7px 4px; border-bottom:1px solid var(--line);}
   table.analytics td:last-child{text-align:right; font-weight:700;}
 
+  /* ---------- Rhythm + rest ---------- */
+  .modechips{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0;}
+  .modechips .chip[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#06280f; font-weight:700;}
+  .suggestbox{display:none; background:#12351d; border:1px solid var(--accent); color:#dff7e4;
+    border-radius:12px; padding:12px; margin:10px 0; font-size:15px;}
+  .suggestbox.show{display:block;}
+  .suggestbox .btn{margin:8px 0 0; min-height:48px; padding:10px; font-size:16px;}
+  .weekrow{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0;}
+  .weekrow .chip[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#06280f; font-weight:700;}
+  .resthero{font-size:44px; font-weight:800; text-align:center; margin:4px 0;}
+
   /* ---------- Forms ---------- */
   label.field{display:block; font-size:14px; color:var(--muted); margin:10px 0 4px;}
   input[type=text], input[type=number]{width:100%; padding:12px; font-size:17px;
@@ -91,19 +163,39 @@
   .targetedit input{flex:1;}
   .targetedit button{flex:0 0 auto; width:auto; padding:12px 16px; margin:0; min-height:48px; font-size:16px;}
 
+  /* ---------- Celebration ---------- */
+  #celebration{display:none; position:fixed; inset:0; z-index:100; background:rgba(5,10,8,.88);
+    align-items:center; justify-content:center; flex-direction:column; text-align:center; padding:24px;}
+  #celebration.show{display:flex;}
+  #celebration h2{font-size:34px; margin:14px 0 6px;}
+  #celebration p{color:var(--muted); font-size:17px; margin:0 0 18px;}
+  .confetti{position:absolute; top:-4vh; width:10px; height:16px; border-radius:2px;
+    animation:confettifall linear forwards; pointer-events:none;}
+  @keyframes confettifall{to{transform:translateY(112vh) rotate(680deg);}}
+  .cupwrap{animation:cupflex 1s ease-in-out infinite alternate; transform-origin:50% 90%;}
+  @keyframes cupflex{from{transform:scale(1);} to{transform:scale(1.05);}}
+  .armL{transform-origin:52px 96px; animation:armpump 1s ease-in-out infinite alternate;}
+  .armR{transform-origin:108px 96px; animation:armpump 1s ease-in-out infinite alternate-reverse;}
+  @keyframes armpump{from{transform:rotate(0deg);} to{transform:rotate(-7deg);}}
+  .armR{animation-name:armpumpR;}
+  @keyframes armpumpR{from{transform:rotate(0deg);} to{transform:rotate(7deg);}}
+
   /* ---------- Floating Home + tab bar ---------- */
-  #homeBtn{position:fixed; right:16px; bottom:92px; z-index:60;
+  #homeBtn{position:fixed; right:16px; bottom:96px; z-index:60;
     background:var(--accent); color:#06280f; border:none; border-radius:999px;
-    padding:16px 22px; font-size:19px; font-weight:800; min-height:60px; min-width:118px;
+    padding:15px 20px; font-size:18px; font-weight:800; min-height:56px; min-width:110px;
     box-shadow:0 6px 18px rgba(0,0,0,.55); cursor:pointer;}
   nav#tabbar{position:fixed; left:0; right:0; bottom:0; z-index:50;
     background:#131a22; border-top:1px solid var(--line);
     padding-bottom:env(safe-area-inset-bottom); display:flex;}
-  nav#tabbar button{flex:1; background:none; border:none; color:var(--muted);
+  nav#tabbar button{flex:1; background:none; border:none; color:var(--muted); position:relative;
     font-size:12px; padding:9px 0 11px; cursor:pointer; min-height:60px;}
   nav#tabbar button .ico{display:block; font-size:23px; line-height:1.2;}
   nav#tabbar button.active{color:var(--accent); font-weight:700;}
-  .toast{position:fixed; left:50%; transform:translateX(-50%); bottom:170px; z-index:70;
+  nav#tabbar .dot{display:none; position:absolute; top:8px; right:calc(50% - 20px);
+    width:10px; height:10px; border-radius:50%; background:var(--accent2);}
+  nav#tabbar .dot.show{display:block;}
+  .toast{position:fixed; left:50%; transform:translateX(-50%); bottom:176px; z-index:70;
     background:var(--accent); color:#06280f; font-weight:700; padding:12px 20px;
     border-radius:999px; display:none; box-shadow:0 6px 18px rgba(0,0,0,.5);}
   svg.chart{width:100%; height:auto; background:var(--card2); border-radius:12px;}
@@ -120,7 +212,7 @@
   <!-- ================= TODAY ================= -->
   <section class="tabpage" id="page-today">
     <div class="bignums">
-      <div class="bignum"><div class="n" id="leftToday">0</div><div class="l">Left today</div></div>
+      <div class="bignum"><div class="n" id="leftToday">0</div><div class="l" id="leftTodayLabel">Left today</div></div>
       <div class="bignum"><div class="n" id="leftChallenge">0</div><div class="l">Left in the challenge</div></div>
       <div class="bignum"><div class="n" id="paceNum">0</div><div class="l">Ahead / behind pace</div></div>
     </div>
@@ -128,14 +220,22 @@
       <div class="bar"><div id="progressFill"></div></div>
       <div class="center muted" id="progressLabel">0%</div>
       <div class="pace" id="paceText"></div>
+      <div id="replayWrap"></div>
+    </div>
+    <div id="rhythmMountT"></div>
+    <div class="card" id="restCard">
+      <h2>Rest day</h2>
+      <div id="restTodayBody"></div>
     </div>
     <div class="card">
       <div class="statgrid">
-        <div class="stat"><div class="n" id="statToday">0</div><div class="l">Today — push-ups</div></div>
+        <div class="stat"><div class="n" id="statToday">0</div><div class="l">Today: push-ups</div></div>
         <div class="stat"><div class="n" id="statTotal">0</div><div class="l">All-time push-ups</div></div>
         <div class="stat"><div class="n" id="statStreak">0</div><div class="l">Day streak</div></div>
         <div class="stat"><div class="n" id="statMax">0</div><div class="l">Max set</div></div>
       </div>
+      <div id="todayExercises" style="margin-top:12px"></div>
+      <p class="center" id="nextSetLine" style="font-size:16px"></p>
       <p class="center muted" id="firstRunToday"></p>
     </div>
   </section>
@@ -143,14 +243,54 @@
   <!-- ================= LOG ================= -->
   <section class="tabpage" id="page-log">
     <div class="card" id="logCard">
-      <div class="chips" id="exerciseChips"></div>
-      <div id="bigNumber" title="Double-tap to log">10</div>
+      <div class="loghead">
+        <h2>Log a set</h2>
+        <button id="cogBtn" aria-label="Quick-log gesture settings" aria-expanded="false">⚙️</button>
+      </div>
+      <div id="cogPanel">
+        <p class="small muted" style="margin:0 0 6px">Quick-log gesture: how the big number logs a set. The
+          confirmation burst appears right where you tap, and after a quick-log the gestures pause for
+          10 seconds so a stray tap cannot double-log. The LOG button and the missed-sets logger always stay live.</p>
+        <div id="gestureOptions"></div>
+      </div>
+      <div class="exrow" id="exerciseChips"></div>
+      <div id="bigWrap" role="button" aria-label="Big rep number. Double-tap or hold to log.">
+        <svg id="holdRing" width="196" height="196" viewBox="0 0 196 196">
+          <circle class="track" cx="98" cy="98" r="90" fill="none" stroke-width="7"></circle>
+          <circle class="prog" id="holdProg" cx="98" cy="98" r="90" fill="none" stroke-width="7"
+            stroke-linecap="round" stroke-dasharray="565.5" stroke-dashoffset="565.5"></circle>
+        </svg>
+        <div id="bigNumber">10</div>
+      </div>
       <div id="bigExercise">push-ups</div>
+      <div id="cooldownLabel"></div>
       <input type="range" class="bigslider" id="repSlider" min="0" max="60" step="1" value="10" aria-label="Reps">
+      <div class="sliderticks"><span>0</span><span>60</span></div>
       <div class="chips" id="quickChips"></div>
       <button class="btn primary" id="logBtn">LOG 10 Push-ups</button>
       <button class="btn" id="copyLastBtn">Copy last set</button>
-      <p class="small muted center">Tip: double-tap the big number — or double-tap anywhere on this card — to log instantly.</p>
+      <p class="small muted center" id="gestureTip">Tip: double-tap or hold the big number to log instantly.</p>
+    </div>
+    <div class="card">
+      <button class="collapsehead" id="missedHead" aria-expanded="false">
+        <span>Forgot to log some sets?</span><span class="chev">▾</span>
+      </button>
+      <div class="collapsebody" id="missedBody">
+        <p class="small muted">Log sets you already did as separate entries, so your totals rise
+          without inflating your max set. They use the number on the big slider above
+          (<strong id="missedRepsEcho">10</strong> reps each) and land on today.</p>
+        <div class="stepper">
+          <button id="missedMinus" aria-label="One fewer missed set">−</button>
+          <span class="n" id="missedCount">2</span>
+          <button id="missedPlus" aria-label="One more missed set">+</button>
+          <span class="muted">sets</span>
+        </div>
+        <button class="btn" id="missedLogBtn">Log missed sets</button>
+        <label class="field" for="missedCustom">Or type the sets you did, comma separated</label>
+        <input type="text" id="missedCustom" inputmode="numeric" placeholder="e.g. 12, 10, 8">
+        <button class="btn" id="missedCustomBtn">Log these sets</button>
+        <div class="flash" id="missedFlash"></div>
+      </div>
     </div>
     <div class="card">
       <h2>🎲 Shake It Up</h2>
@@ -161,8 +301,12 @@
       </div>
     </div>
     <div class="card">
-      <h2>Recent sets</h2>
-      <ul class="sets" id="recentSets"></ul>
+      <button class="collapsehead" id="recentHead" aria-expanded="false">
+        <span id="recentSummary">Recent sets</span><span class="chev">▾</span>
+      </button>
+      <div class="collapsebody" id="recentBody">
+        <ul class="sets" id="recentSets"></ul>
+      </div>
     </div>
   </section>
 
@@ -210,15 +354,21 @@
 
   <!-- ================= REMINDERS ================= -->
   <section class="tabpage" id="page-reminders">
+    <div id="rhythmMountR"></div>
     <div class="card">
       <h2>Suggested set sizes</h2>
       <div id="suggestions"></div>
-      <p class="small muted">Suggested = what's left of today's target ÷ the 20-minute check-ins remaining until your day-end (snooze time excluded).</p>
-      <p><strong>Next check-in in:</strong> <span id="countdown">—</span></p>
-      <p class="small muted">Honest note: this standalone file can only count down while it's open — it can't send real reminders or notifications when closed. Keep the tab open, or use the countdown as your guide.</p>
+      <p class="small muted">Suggested = what is left of today's target, divided by the check-ins remaining at your current rhythm until your day-end (snooze time excluded). Change the rhythm above and the plan re-spreads instantly.</p>
+      <p><strong>Next check-in in:</strong> <span id="countdown">…</span></p>
+      <p class="small muted">Honest note: this standalone file can only count down while it is open. It cannot send real reminders or notifications when closed. Keep the tab open, or use the countdown as your guide. The Muse build from PROMPT.md sends real scheduled check-ins.</p>
     </div>
     <div class="card">
-      <h2>Snooze &amp; mute</h2>
+      <h2>Weekly rest day</h2>
+      <div class="weekrow" id="weeklyRestRow"></div>
+      <p class="small muted" id="weeklyRestStatus"></p>
+    </div>
+    <div class="card">
+      <h2>Snooze and mute</h2>
       <div id="muteBanner"></div>
       <label class="field" for="snoozeSlider">Snooze length: <strong id="snoozeLabel">60 min</strong></label>
       <input type="range" class="normalslider" id="snoozeSlider" min="15" max="720" step="15" value="60">
@@ -231,12 +381,30 @@
     </div>
     <div class="card">
       <h2>Day-end</h2>
-      <label class="field" for="dayEndSlider">Reminders &amp; pace run until: <strong id="dayEndLabel">10:00 PM</strong></label>
+      <label class="field" for="dayEndSlider">Reminders and pace run until: <strong id="dayEndLabel">10:00 PM</strong></label>
       <input type="range" class="normalslider" id="dayEndSlider" min="720" max="1560" step="15" value="1320">
-      <p class="small muted">Slide past midnight if you're up late — it resets to 10:00 PM on a new day.</p>
+      <p class="small muted">Slide past midnight if you are up late. It resets to 10:00 PM on a new day.</p>
     </div>
   </section>
 </main>
+
+<div id="celebration" role="dialog" aria-label="Goal celebration">
+  <div class="cupwrap" aria-hidden="true">
+    <svg width="160" height="190" viewBox="0 0 160 190">
+      <path class="armL" d="M52 96 Q26 84 24 58 Q24 46 33 46 Q41 46 42 55 Q44 76 56 84 Z" fill="#ffb340"/>
+      <path class="armR" d="M108 96 Q134 84 136 58 Q136 46 127 46 Q119 46 118 55 Q116 76 104 84 Z" fill="#ffb340"/>
+      <rect x="66" y="18" width="9" height="42" rx="4" transform="rotate(14 70 39)" fill="#ff5d8f"/>
+      <path d="M48 62 L112 62 L104 168 Q103 178 93 178 L67 178 Q57 178 56 168 Z" fill="#4ecdc4"/>
+      <path d="M48 62 L112 62 L109 96 L51 96 Z" fill="#b8e62e"/>
+      <circle cx="70" cy="126" r="5" fill="#0f2a28"/>
+      <circle cx="90" cy="126" r="5" fill="#0f2a28"/>
+      <path d="M71 142 Q80 150 89 142" stroke="#0f2a28" stroke-width="4" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <h2 id="celebTitle">Goal smashed!</h2>
+  <p id="celebText">You hit today's target.</p>
+  <button class="btn primary" id="celebClose" style="max-width:280px">Keep going</button>
+</div>
 
 <button id="homeBtn" aria-label="Home">🏠 Home</button>
 <div class="toast" id="toast"></div>
@@ -246,37 +414,69 @@
   <button data-tab="log"><span class="ico">➕</span>Log</button>
   <button data-tab="progress"><span class="ico">📈</span>Progress</button>
   <button data-tab="exercises"><span class="ico">🏋️</span>Exercises</button>
-  <button data-tab="reminders"><span class="ico">⏰</span>Reminders</button>
+  <button data-tab="reminders"><span class="ico">⏰</span>Reminders<span class="dot" id="remDot"></span></button>
 </nav>
 
 <script>
 /* ================================================================
-   CONFIG — edit these defaults to make the challenge yours.
+   CONFIG: edit these defaults to make the challenge yours.
    ================================================================ */
 const CONFIG = {
   goal: 10000,                 // total push-ups for the challenge
   startDate: '2026-11-11',     // first day of the challenge (YYYY-MM-DD)
   endDate: '2026-12-31',       // last day of the challenge
-  dailyTarget: 200,            // push-ups per day
-  activeStartHour: 11,         // reminders / pace window opens (11:00)
+  dailyTarget: 200,            // nominal push-ups per day (pace target is dynamic, see below)
+  activeStartHour: 11,         // check-in window opens (11:00 AM)
   activeEndHour: 22,           // default day-end (22:00 = 10:00 PM)
-  checkinIntervalMinutes: 20,  // minutes between check-ins
   timezone: 'local'            // uses the device's local timezone
 };
+const WEEKDAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const WEEKDAY_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+/* Gesture tuning, matched to the full build: a relaxed 0.7s double-tap
+   window, a 650ms hold with a filling ring, a 10s lockout after any
+   quick-log, and a ~10px movement threshold so a scroll never logs. */
+const DOUBLE_TAP_WINDOW_MS = 700;
+const HOLD_MS = 650;
+const QUICK_LOG_COOLDOWN_MS = 10000;
+const MOVE_THRESHOLD_PX = 10;
+const GESTURE_OPTIONS = [
+  { id: 'both', label: 'Double-tap or hold', hint: 'Double-tap the big number, or press and hold it for a moment to log.' },
+  { id: 'tap',  label: 'Double tap to log',  hint: 'Double-tap the big number (you have a relaxed 0.7s between taps).' },
+  { id: 'hold', label: 'Hold to log',        hint: 'Press and hold the big number: a ring fills, then it logs. No fast tapping needed.' },
+  { id: 'off',  label: 'Buttons only',       hint: 'Quick gestures off. Use the big LOG button or Copy last set.' }
+];
+const RHYTHM_CHIPS = [
+  { label: 'Catch-up · 10', mins: 10 },
+  { label: 'Normal · 20', mins: 20 },
+  { label: 'Focused · 45', mins: 45 },
+  { label: 'Deep work · 60', mins: 60 }
+];
+const CONFETTI_COLORS = ['#b8e62e','#ff6b35','#ffd23f','#ff5d8f','#4ecdc4','#f4f4ef'];
 
 /* ---------------- Storage (one localStorage key) ---------------- */
 const STORAGE_KEY = 'tenthousandthings.v1';
 const BUILTINS = [
-  { slug: 'pushups', name: 'Push-ups', custom: false, dailyTarget: CONFIG.dailyTarget },
-  { slug: 'squats',  name: 'Squats',   custom: false, dailyTarget: 0 },
-  { slug: 'situps',  name: 'Sit-ups',  custom: false, dailyTarget: 0 }
+  { slug: 'pushups', name: 'Push-ups', custom: false, dailyTarget: CONFIG.dailyTarget, favorite: true },
+  { slug: 'squats',  name: 'Squats',   custom: false, dailyTarget: 0, favorite: false },
+  { slug: 'situps',  name: 'Sit-ups',  custom: false, dailyTarget: 0, favorite: false }
 ];
 
 function defaultData() {
   return {
     exercises: JSON.parse(JSON.stringify(BUILTINS)),
     logs: [],                                   // {id, exercise, reps, date, ts}
-    settings: { dayEndMinutes: CONFIG.activeEndHour * 60, dayEndDate: todayStr() },
+    settings: {
+      dayEndMinutes: CONFIG.activeEndHour * 60, dayEndDate: todayStr(),
+      intervalMinutes: 20,                      // check-in rhythm (5..120)
+      weeklyRestWeekday: null,                  // null, or 0 (Sun) .. 6 (Sat)
+      gestureMode: 'both',
+      celebratedDate: null,                     // last day the goal celebration fired
+      rhythmDismissKey: ''                      // dismissed rhythm suggestion key
+    },
+    restDates: [],                              // individual rest days, 'YYYY-MM-DD'
+    workDates: [],                              // one-off work days that override the weekly rest day
+    intervalHistory: [],                        // {kind, bucket, minutes} rhythm picks
     mute: { mode: null, until: 0 }              // mode: 'snooze' | 'day' | 'week'
   };
 }
@@ -286,21 +486,24 @@ function loadData() {
     if (!raw) return defaultData();
     const d = JSON.parse(raw);
     if (!d.exercises || !d.logs) return defaultData();
-    d.settings = d.settings || { dayEndMinutes: CONFIG.activeEndHour * 60, dayEndDate: todayStr() };
+    const def = defaultData();
+    d.settings = Object.assign(def.settings, d.settings || {});
+    d.restDates = Array.isArray(d.restDates) ? d.restDates : [];
+    d.workDates = Array.isArray(d.workDates) ? d.workDates : [];
+    d.intervalHistory = Array.isArray(d.intervalHistory) ? d.intervalHistory : [];
     d.mute = d.mute || { mode: null, until: 0 };
+    d.exercises.forEach(e => { if (typeof e.favorite !== 'boolean') e.favorite = (e.slug === 'pushups'); });
     return d;
   } catch (e) { return defaultData(); }
 }
 function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
 
 let data = loadData();
-// Day-end resets to the default on a new day.
 if (data.settings.dayEndDate !== todayStr()) {
   data.settings.dayEndMinutes = CONFIG.activeEndHour * 60;
   data.settings.dayEndDate = todayStr();
   saveData();
 }
-// Clear an expired mute.
 if (data.mute.until && Date.now() > data.mute.until) { data.mute = { mode: null, until: 0 }; saveData(); }
 
 /* ---------------- Date helpers (local time) ---------------- */
@@ -318,6 +521,9 @@ function fmtTime(mins) {
   const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
   return h + ':' + String(mm).padStart(2, '0') + ' ' + ap + (mins >= 1440 ? ' (next day)' : '');
 }
+function vibrate(pattern) {
+  try { if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(pattern); } catch (e) {}
+}
 
 /* ---------------- Stats ---------------- */
 function logsFor(slug) { return data.logs.filter(l => l.exercise === slug); }
@@ -328,44 +534,159 @@ function maxSet(slug) {
   const ls = logsFor(slug); if (!ls.length) return { reps: 0, date: null };
   return ls.reduce((best, l) => l.reps > best.reps ? { reps: l.reps, date: l.date } : best, { reps: 0, date: null });
 }
-function dailyTotals(slug) { // {date: total}
+function dailyTotals(slug) {
   const map = {};
   logsFor(slug).forEach(l => { map[l.date] = (map[l.date] || 0) + l.reps; });
   return map;
-}
-function streakDays() {
-  const days = new Set(logsFor('pushups').filter(l => l.reps > 0).map(l => l.date));
-  let streak = 0, cursor = todayStr();
-  if (!days.has(cursor)) cursor = addDays(cursor, -1); // today not started yet doesn't break it
-  while (days.has(cursor)) { streak++; cursor = addDays(cursor, -1); }
-  return streak;
 }
 function lastSet(slug) {
   const ls = logsFor(slug);
   return ls.length ? ls[ls.length - 1] : null;
 }
 
-/* Suggested set size: reps remaining today / check-ins remaining until day-end (snooze excluded). */
-function suggestedSet(slug) {
-  const ex = data.exercises.find(e => e.slug === slug);
-  if (!ex || !ex.dailyTarget) return 0;
-  const remaining = ex.dailyTarget - todayDone(slug);
+/* ---------------- Rest days + rest-aware pace ---------------- */
+function isRestDate(s) {
+  if (data.workDates.includes(s)) return false;   // explicit one-off work day wins
+  if (data.restDates.includes(s)) return true;
+  const w = data.settings.weeklyRestWeekday;
+  return w !== null && w !== undefined && parseDate(s).getDay() === w;
+}
+function isRestToday() { return isRestDate(todayStr()); }
+function countDays(from, to, workOnly) {
+  if (from > to) return 0;
+  let n = 0, d = from;
+  while (d <= to) { if (!workOnly || !isRestDate(d)) n++; d = addDays(d, 1); }
+  return n;
+}
+function periodStart() { const t = todayStr(); return t < CONFIG.startDate ? CONFIG.startDate : t; }
+function remainingCalendarDays() { return countDays(periodStart(), CONFIG.endDate, false); }
+function remainingWorkDays() { return countDays(periodStart(), CONFIG.endDate, true); }
+function hasRestPlan() {
+  if (data.settings.weeklyRestWeekday !== null && data.settings.weeklyRestWeekday !== undefined) return true;
+  const from = periodStart();
+  return data.restDates.some(d => d >= from && d <= CONFIG.endDate);
+}
+/* The pace target: what remains, spread over the days left. With a rest
+   plan it spreads over work days only, so a rest day never puts you behind. */
+function paceTargetToday() {
+  if (isRestToday()) return 0;
+  const remaining = CONFIG.goal - totalDone('pushups');
   if (remaining <= 0) return 0;
-  const now = new Date(), nowMin = now.getHours() * 60 + now.getMinutes();
-  let activeMin = data.settings.dayEndMinutes - nowMin;
-  if (muteActive() && data.mute.mode === 'snooze') {
-    activeMin -= Math.ceil((data.mute.until - Date.now()) / 60000);
+  if (hasRestPlan()) {
+    const wd = remainingWorkDays();
+    return wd > 0 ? Math.ceil(remaining / wd) : remaining;
   }
-  const slots = Math.max(1, Math.ceil(activeMin / CONFIG.checkinIntervalMinutes));
-  return Math.ceil(remaining / slots);
+  const cd = remainingCalendarDays();
+  return cd > 0 ? Math.ceil(remaining / cd) : remaining;
+}
+function flatTargetToday() {
+  const remaining = CONFIG.goal - totalDone('pushups');
+  const cd = remainingCalendarDays();
+  return cd > 0 ? Math.ceil(remaining / cd) : Math.max(0, remaining);
+}
+function effectiveTarget(slug) {
+  if (slug === 'pushups') return paceTargetToday();
+  const ex = data.exercises.find(e => e.slug === slug);
+  return ex ? (ex.dailyTarget || 0) : 0;
+}
+function streakDays() {
+  const days = new Set(data.logs.filter(l => l.reps > 0).map(l => l.date));
+  let streak = 0, cursor = todayStr();
+  let guard = 0;
+  while (guard++ < 400) {
+    if (days.has(cursor)) { streak++; cursor = addDays(cursor, -1); continue; }
+    if (isRestDate(cursor)) { cursor = addDays(cursor, -1); continue; }   // planned rest never breaks it
+    if (cursor === todayStr()) { cursor = addDays(cursor, -1); continue; } // today is not over yet
+    break;
+  }
+  return streak;
+}
+
+/* ---------------- Check-in rhythm + pace slots ---------------- */
+function dayEndTs() { const d = new Date(); d.setHours(0, data.settings.dayEndMinutes, 0, 0); return d.getTime(); }
+function windowStartTs() { const d = new Date(); d.setHours(CONFIG.activeStartHour, 0, 0, 0); return d.getTime(); }
+function slotsLeft(interval) {
+  let from = Date.now();
+  const start = windowStartTs();
+  if (from < start) from = start;
+  if (muteActive() && data.mute.mode === 'snooze') from = Math.max(from, data.mute.until);
+  const ms = dayEndTs() - from;
+  if (ms <= 0) return 0;
+  return Math.ceil(ms / 60000 / interval);
+}
+function suggestedSet(slug, interval) {
+  const target = effectiveTarget(slug);
+  if (!target) return 0;
+  const remaining = target - todayDone(slug);
+  if (remaining <= 0) return 0;
+  const slots = slotsLeft(interval || data.settings.intervalMinutes);
+  return Math.ceil(remaining / Math.max(1, slots));
 }
 function muteActive() { return data.mute.mode && Date.now() < data.mute.until; }
+function rhythmLabel(mins) {
+  if (mins <= 15) return 'Catch-up: frequent, small sets';
+  if (mins <= 25) return 'Normal rhythm';
+  if (mins <= 40) return 'Focused: balanced';
+  if (mins <= 60) return 'Deep work: spaced out, fewer interruptions';
+  return 'Very spaced: few check-ins, bigger sets';
+}
+function rhythmBucket() {
+  const now = new Date();
+  const kind = (now.getDay() === 0 || now.getDay() === 6) ? 'weekend' : 'weekday';
+  const h = now.getHours();
+  const bucket = h < 12 ? 'morning' : (h < 17 ? 'afternoon' : 'evening');
+  return { kind: kind, bucket: bucket, label: (kind === 'weekday' ? 'Weekday' : 'Weekend') + ' ' + bucket + 's' };
+}
+function rhythmSuggestion() {
+  const b = rhythmBucket();
+  const counts = {};
+  data.intervalHistory.filter(s => s.kind === b.kind && s.bucket === b.bucket)
+    .forEach(s => { counts[s.minutes] = (counts[s.minutes] || 0) + 1; });
+  let best = null, bestN = 0;
+  Object.keys(counts).forEach(k => { if (counts[k] > bestN) { bestN = counts[k]; best = +k; } });
+  if (best === null || bestN < 3) return null;
+  if (best === data.settings.intervalMinutes) return null;
+  const key = todayStr() + '|' + b.kind + '|' + b.bucket + '|' + best;
+  if (data.settings.rhythmDismissKey === key) return null;
+  return { minutes: best, sampleCount: bestN, scopeLabel: b.label, key: key };
+}
+function rhythmPatterns() {
+  const groups = {};
+  data.intervalHistory.forEach(s => {
+    const gk = s.kind + '|' + s.bucket;
+    groups[gk] = groups[gk] || {};
+    groups[gk][s.minutes] = (groups[gk][s.minutes] || 0) + 1;
+  });
+  const out = [];
+  Object.keys(groups).forEach(gk => {
+    let best = null, bestN = 0, total = 0;
+    Object.keys(groups[gk]).forEach(k => { total += groups[gk][k]; if (groups[gk][k] > bestN) { bestN = groups[gk][k]; best = +k; } });
+    const parts = gk.split('|');
+    out.push({ label: (parts[0] === 'weekday' ? 'Weekday' : 'Weekend') + ' ' + parts[1] + 's',
+               minutes: best, sampleCount: total });
+  });
+  return out.sort((a, b) => b.sampleCount - a.sampleCount).slice(0, 4);
+}
+function commitRhythm(mins) {
+  mins = Math.max(5, Math.min(120, Math.round(mins)));
+  data.settings.intervalMinutes = mins;
+  const b = rhythmBucket();
+  data.intervalHistory.push({ kind: b.kind, bucket: b.bucket, minutes: mins });
+  if (data.intervalHistory.length > 300) data.intervalHistory = data.intervalHistory.slice(-300);
+  saveData(); render();
+}
 
 /* ---------------- UI state ---------------- */
 let currentTab = 'log';               // app opens on Log
 let selectedExercise = 'pushups';
 let currentShake = null;
-let lastLogAt = 0;                    // double-tap guard timestamp
+let cooldownUntil = 0;                // quick-log gesture lockout deadline
+let cooldownTimer = null;
+let missedCount = 2;
+let missedExpanded = false;
+let recentExpanded = false;
+let cogOpen = false;
+const openExerciseDetails = new Set();
 
 const $ = id => document.getElementById(id);
 
@@ -381,32 +702,91 @@ document.querySelectorAll('#tabbar button').forEach(b =>
   b.addEventListener('click', () => showTab(b.dataset.tab)));
 $('homeBtn').addEventListener('click', () => showTab('today')); // floating Home -> Today
 
+let toastTimer = null;
 function toast(msg) {
   const t = $('toast'); t.textContent = msg; t.style.display = 'block';
-  setTimeout(() => { t.style.display = 'none'; }, 1600);
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.display = 'none'; }, 1600);
 }
+
+/* ---------------- Bursts (feedback exactly at the tap point) ---------------- */
+function spawnBurst(x, y, text, kind) {
+  document.querySelectorAll('.burst').forEach(b => b.remove());
+  const b = document.createElement('div');
+  b.className = 'burst' + (kind === 'hint' ? ' hint' : '');
+  b.textContent = text;
+  b.style.left = x + 'px'; b.style.top = y + 'px';
+  document.body.appendChild(b);
+  setTimeout(() => b.remove(), kind === 'hint' ? 2000 : 2400);
+}
+
+/* ---------------- Celebration ---------------- */
+function fireCelebration(kind) {
+  const c = $('celebration');
+  $('celebTitle').textContent = kind === 'year' ? '🎉 10,000 done!' : 'Goal smashed! 🎉';
+  $('celebText').textContent = kind === 'year'
+    ? 'The whole challenge is complete. Incredible.'
+    : 'You hit today\'s target of ' + paceTargetToday().toLocaleString() + ' push-ups. Smoothie earned.';
+  c.querySelectorAll('.confetti').forEach(p => p.remove());
+  for (let i = 0; i < 36; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti';
+    p.style.left = (Math.random() * 100) + 'vw';
+    p.style.background = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
+    p.style.animationDuration = (2.2 + Math.random() * 2.2) + 's';
+    p.style.animationDelay = (Math.random() * 0.7) + 's';
+    if (Math.random() > 0.5) p.style.borderRadius = '50%';
+    c.appendChild(p);
+  }
+  c.classList.add('show');
+  vibrate([30, 60, 30]);
+}
+$('celebClose').addEventListener('click', () => $('celebration').classList.remove('show'));
+$('celebration').addEventListener('click', e => {
+  if (e.target === $('celebration')) $('celebration').classList.remove('show');
+});
 
 /* ---------------- Logging ---------------- */
-function logSet(slug, reps) {
+function logSet(slug, reps, opts) {
+  opts = opts || {};
   reps = parseInt(reps, 10);
-  if (!reps || reps <= 0) { toast('Set the slider above 0 first'); return; }
-  data.logs.push({ id: Date.now() + '-' + Math.random().toString(36).slice(2, 7),
-                   exercise: slug, reps: reps, date: todayStr(), ts: Date.now() });
+  if (!reps || reps <= 0) { if (!opts.silent) toast('Set the slider above 0 first'); return null; }
+  // Celebration crossing is judged against the target as it stood before this set.
+  const targetBefore = slug === 'pushups' ? paceTargetToday() : 0;
+  const doneBefore = slug === 'pushups' ? todayDone('pushups') : 0;
+  const totalBefore = slug === 'pushups' ? totalDone('pushups') : 0;
+  const entry = { id: Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+                  exercise: slug, reps: reps, date: todayStr(), ts: Date.now() };
+  data.logs.push(entry);
   saveData(); render();
-  const ex = data.exercises.find(e => e.slug === slug);
-  toast('Logged ' + reps + ' ' + (ex ? ex.name : slug) + ' ✓');
+  if (slug === 'pushups' && !opts.silent) {
+    const doneAfter = todayDone('pushups'), totalAfter = totalDone('pushups');
+    if (totalAfter >= CONFIG.goal && totalBefore < CONFIG.goal) {
+      fireCelebration('year');
+    } else if (targetBefore > 0 && doneAfter >= targetBefore && doneBefore < targetBefore &&
+               data.settings.celebratedDate !== todayStr()) {
+      data.settings.celebratedDate = todayStr(); saveData();
+      fireCelebration('daily');
+    }
+  }
+  if (!opts.silent) {
+    const ex = data.exercises.find(e => e.slug === slug);
+    toast('Logged ' + reps + ' ' + (ex ? ex.name : slug) + ' ✓');
+  }
+  return entry;
 }
-function guardedLog() {
-  // Guard against accidental double-logging of the same gesture:
-  // one double-tap fires handlers on both the number and the card — log exactly once.
-  const now = Date.now();
-  if (now - lastLogAt < 600) return;
-  lastLogAt = now;
-  logSet(selectedExercise, $('repSlider').value);
+function updateLogButton() {
+  const ex = data.exercises.find(e => e.slug === selectedExercise);
+  $('logBtn').textContent = 'LOG ' + $('repSlider').value + ' ' + (ex ? ex.name : '');
+  $('bigExercise').textContent = ex ? ex.name.toLowerCase() : '';
+  if (Date.now() >= cooldownUntil) $('bigNumber').textContent = $('repSlider').value;
+  $('missedRepsEcho').textContent = $('repSlider').value;
+  const last = lastSet(selectedExercise);
+  $('copyLastBtn').textContent = last ? ('Copy last set: log ' + last.reps + ' again') : 'Copy last set: no sets yet';
+  $('copyLastBtn').disabled = !last;
 }
-
 $('repSlider').addEventListener('input', e => {
-  $('bigNumber').textContent = e.target.value;
+  if (Date.now() >= cooldownUntil) $('bigNumber').textContent = e.target.value;
   updateLogButton();
 });
 $('logBtn').addEventListener('click', () => logSet(selectedExercise, $('repSlider').value));
@@ -414,34 +794,182 @@ $('copyLastBtn').addEventListener('click', () => {
   const last = lastSet(selectedExercise);
   if (last) logSet(selectedExercise, last.reps);
 });
-/* double-tap handlers */
-$('bigNumber').addEventListener('dblclick', e => { e.stopPropagation(); guardedLog(); });
-$('logCard').addEventListener('dblclick', e => {
-  if (e.target.closest('button, input, select, a, .chip')) return; // not on controls
-  guardedLog();
+
+/* ---------------- Quick-log gestures on the big number ---------------- */
+function cooldownLeft() { return Math.max(0, cooldownUntil - Date.now()); }
+function startCooldownUI() {
+  if (cooldownTimer) clearInterval(cooldownTimer);
+  const label = $('cooldownLabel');
+  label.style.display = 'block';
+  const tick = () => {
+    const left = cooldownLeft();
+    if (left <= 0) {
+      clearInterval(cooldownTimer); cooldownTimer = null;
+      label.style.display = 'none';
+      $('bigNumber').textContent = $('repSlider').value;
+      return;
+    }
+    $('bigNumber').textContent = Math.ceil(left / 1000);
+    label.textContent = 'quick-log pause: gestures back in ' + Math.ceil(left / 1000) + 's';
+  };
+  tick();
+  cooldownTimer = setInterval(tick, 200);
+}
+function quickLog(x, y) {
+  if (cooldownLeft() > 0) {
+    spawnBurst(x, y, 'Paused: ' + Math.ceil(cooldownLeft() / 1000) + 's', 'hint');
+    return;
+  }
+  const reps = parseInt($('repSlider').value, 10);
+  const entry = logSet(selectedExercise, reps);
+  if (!entry) return;
+  cooldownUntil = Date.now() + QUICK_LOG_COOLDOWN_MS;
+  spawnBurst(x, y, '+' + reps + ' logged ✓');
+  vibrate(18);
+  startCooldownUI();
+}
+/* Press state shared by the number and the card: origin tracking gives
+   scroll-vs-gesture arbitration (past ~10px of movement, it is a scroll). */
+let press = null;         // {x, y, moved, holdFired, source}
+let lastTapAt = 0, lastTapX = 0, lastTapY = 0;
+let holdAnim = null;
+function ringProgress(p) {
+  $('holdProg').style.strokeDashoffset = String(565.5 * (1 - Math.max(0, Math.min(1, p))));
+}
+function cancelHold() {
+  if (holdAnim) { clearInterval(holdAnim); holdAnim = null; }
+  ringProgress(0);
+}
+function beginPress(e, source) {
+  if (data.settings.gestureMode === 'off') return;
+  press = { x: e.clientX, y: e.clientY, moved: false, holdFired: false, source: source, started: Date.now() };
+  const mode = data.settings.gestureMode;
+  if ((mode === 'both' || mode === 'hold') && source === 'number') {
+    const started = Date.now();
+    holdAnim = setInterval(() => {
+      if (!press || press.moved) { cancelHold(); return; }
+      const p = (Date.now() - started) / HOLD_MS;
+      ringProgress(p);
+      if (p >= 1) {
+        cancelHold();
+        press.holdFired = true;
+        quickLog(press.x, press.y);
+      }
+    }, 30);
+  }
+}
+function movePress(e) {
+  if (!press) return;
+  if (Math.hypot(e.clientX - press.x, e.clientY - press.y) > MOVE_THRESHOLD_PX) {
+    press.moved = true;
+    cancelHold();
+  }
+}
+function endPress(e, source) {
+  if (!press || press.source !== source) { press = null; return; }
+  const p = press; press = null;
+  cancelHold();
+  if (p.moved || p.holdFired) { lastTapAt = 0; return; }
+  const mode = data.settings.gestureMode;
+  if (mode !== 'both' && mode !== 'tap') return;
+  const now = Date.now();
+  if (now - lastTapAt < DOUBLE_TAP_WINDOW_MS) {
+    lastTapAt = 0;
+    quickLog(e.clientX || p.x, e.clientY || p.y);
+  } else {
+    lastTapAt = now; lastTapX = p.x; lastTapY = p.y;
+    if (source === 'number') spawnBurst(p.x, p.y, mode === 'tap' ? 'Tap again to log' : 'Double-tap or hold to log', 'hint');
+  }
+}
+const bigWrap = $('bigWrap');
+bigWrap.addEventListener('pointerdown', e => { e.preventDefault(); beginPress(e, 'number'); });
+bigWrap.addEventListener('pointermove', movePress);
+bigWrap.addEventListener('pointerup', e => endPress(e, 'number'));
+bigWrap.addEventListener('pointercancel', () => { press = null; cancelHold(); lastTapAt = 0; });
+bigWrap.addEventListener('contextmenu', e => e.preventDefault());
+/* Double-tap anywhere else on the log card (never on a control) logs too. */
+const logCard = $('logCard');
+logCard.addEventListener('pointerdown', e => {
+  if (e.target.closest('button, input, select, a, .chip, .exchip, #bigWrap, #cogPanel')) return;
+  beginPress(e, 'card');
+});
+logCard.addEventListener('pointermove', movePress);
+logCard.addEventListener('pointerup', e => {
+  if (e.target.closest('button, input, select, a, .chip, .exchip, #bigWrap, #cogPanel')) { press = null; return; }
+  endPress(e, 'card');
+});
+logCard.addEventListener('pointercancel', () => { press = null; cancelHold(); lastTapAt = 0; });
+/* Cog: gesture settings live behind it, closed by default. */
+$('cogBtn').addEventListener('click', () => {
+  cogOpen = !cogOpen;
+  $('cogPanel').classList.toggle('open', cogOpen);
+  $('cogBtn').setAttribute('aria-expanded', String(cogOpen));
 });
 
-function updateLogButton() {
+/* ---------------- Missed sets + split ---------------- */
+function logMissedSets(repsList) {
+  const valid = repsList.filter(n => Number.isFinite(n) && n >= 1 && n <= 1000).slice(0, 10);
+  if (!valid.length) { toast('Nothing to log there'); return; }
+  valid.forEach(reps => logSet(selectedExercise, reps, { silent: true }));
+  render();
+  vibrate(18);
   const ex = data.exercises.find(e => e.slug === selectedExercise);
-  $('logBtn').textContent = 'LOG ' + $('repSlider').value + ' ' + (ex ? ex.name : '');
-  $('bigExercise').textContent = ex ? ex.name.toLowerCase() : '';
-  const last = lastSet(selectedExercise);
-  $('copyLastBtn').textContent = last ? ('Copy last set — log ' + last.reps + ' again') : 'Copy last set — no sets yet';
-  $('copyLastBtn').disabled = !last;
+  $('missedFlash').textContent = 'Logged ' + valid.length + ' separate sets: ' + valid.join(' + ') +
+    ' ' + (ex ? ex.name.toLowerCase() : '') + ' ✓';
+  setTimeout(() => { $('missedFlash').textContent = ''; }, 3500);
+  toast('Logged ' + valid.length + ' missed sets ✓');
 }
+$('missedHead').addEventListener('click', () => {
+  missedExpanded = !missedExpanded;
+  $('missedBody').classList.toggle('open', missedExpanded);
+  $('missedHead').setAttribute('aria-expanded', String(missedExpanded));
+});
+$('missedMinus').addEventListener('click', () => {
+  missedCount = Math.max(1, missedCount - 1); $('missedCount').textContent = missedCount;
+});
+$('missedPlus').addEventListener('click', () => {
+  missedCount = Math.min(5, missedCount + 1); $('missedCount').textContent = missedCount;
+});
+$('missedLogBtn').addEventListener('click', () => {
+  const reps = parseInt($('repSlider').value, 10);
+  if (!reps) { toast('Set the slider above 0 first'); return; }
+  logMissedSets(Array(missedCount).fill(reps));
+});
+$('missedCustomBtn').addEventListener('click', () => {
+  const list = $('missedCustom').value.split(',').map(s => parseInt(s.trim(), 10));
+  logMissedSets(list);
+  $('missedCustom').value = '';
+});
+function splitEntry(id) {
+  const idx = data.logs.findIndex(l => l.id === id);
+  if (idx < 0) return;
+  const entry = data.logs[idx];
+  if (entry.reps < 2) return;
+  const a = Math.floor(entry.reps / 2), b = entry.reps - a;
+  const mk = reps => ({ id: Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+                        exercise: entry.exercise, reps: reps, date: entry.date, ts: entry.ts });
+  data.logs.splice(idx, 1, mk(a), mk(b));
+  saveData(); render();
+  toast('Split into ' + a + ' + ' + b);
+}
+$('recentHead').addEventListener('click', () => {
+  recentExpanded = !recentExpanded;
+  $('recentBody').classList.toggle('open', recentExpanded);
+  $('recentHead').setAttribute('aria-expanded', String(recentExpanded));
+});
 
 /* ---------------- Shake It Up ---------------- */
 const SHAKES = [
-  'Drop and do 5 right now — no warm-up, just go.',
+  'Drop and do 5 right now: no warm-up, just go.',
   'Beat your last set by 1 rep.',
   'Do a slow set: 3 seconds down, 3 seconds up, as many as you can.',
-  'Pyramid: 5, then 10, then 15, then 10, then 5 — short rests.',
-  'Diamond push-ups — hands together — as many as you can.',
+  'Pyramid: 5, then 10, then 15, then 10, then 5, with short rests.',
+  'Diamond push-ups, hands together, as many as you can.',
   'Hold the bottom of a push-up for 20 seconds, then push out 5.',
   'Wide-grip set to failure (safely!).',
   '1-minute challenge: as many clean reps as you can in 60 seconds.',
-  'Do your suggested set size — twice, back to back with 30s rest.',
-  'Wall push-ups × 25 if your arms are cooked — movement counts.'
+  'Do your suggested set size twice, back to back with 30s rest.',
+  'Wall push-ups × 25 if your arms are cooked: movement counts.'
 ];
 $('shakeBtn').addEventListener('click', () => {
   currentShake = SHAKES[Math.floor(Math.random() * SHAKES.length)];
@@ -450,13 +978,13 @@ $('shakeBtn').addEventListener('click', () => {
 });
 $('shakeAcceptBtn').addEventListener('click', () => {
   if (!currentShake) return;
-  $('shakeText').textContent = '✅ Accepted: ' + currentShake + ' — log it above when you\'re done!';
+  $('shakeText').textContent = '✅ Accepted: ' + currentShake + ' Log it above when you are done.';
   $('shakeAcceptBtn').disabled = true;
 });
 
 /* ---------------- Render ---------------- */
 function render() {
-  renderHeader(); renderToday(); renderLog(); renderProgress(); renderExercises(); renderReminders();
+  renderHeader(); renderToday(); renderRhythm(); renderLog(); renderProgress(); renderExercises(); renderReminders();
 }
 function renderHeader() {
   const t = totalDone('pushups');
@@ -468,41 +996,207 @@ function renderHeader() {
     b.textContent = '🔕 Reminders ' + (data.mute.mode === 'snooze' ? 'snoozed' : 'muted') +
       ' until ' + new Date(data.mute.until).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) +
       ' on ' + new Date(data.mute.until).toLocaleDateString();
+  } else if (isRestToday()) {
+    b.style.display = 'block';
+    b.textContent = '🌿 Rest day today: target 0, reminders quiet. Anything you log is bonus.';
   } else b.style.display = 'none';
 }
 function renderToday() {
+  const rest = isRestToday();
   const today = todayDone('pushups'), total = totalDone('pushups');
-  const leftToday = Math.max(0, CONFIG.dailyTarget - today);
+  const target = paceTargetToday();
+  const leftToday = rest ? 0 : Math.max(0, target - today);
   const leftYear = Math.max(0, CONFIG.goal - total);
-  const totalDays = daysBetween(CONFIG.startDate, CONFIG.endDate) + 1;
-  const elapsed = Math.min(totalDays, Math.max(0, daysBetween(CONFIG.startDate, todayStr()) + 1));
-  const expected = elapsed * CONFIG.dailyTarget;
-  const delta = total - expected;
-  $('leftToday').textContent = leftToday.toLocaleString();
+  const from = CONFIG.startDate, to = todayStr() > CONFIG.endDate ? CONFIG.endDate : todayStr();
+  let expected = 0;
+  if (todayStr() >= CONFIG.startDate) {
+    if (hasRestPlan()) {
+      const tw = countDays(from, CONFIG.endDate, true), ew = countDays(from, to, true);
+      expected = tw > 0 ? CONFIG.goal * ew / tw : 0;
+    } else {
+      const tc = countDays(from, CONFIG.endDate, false), ec = countDays(from, to, false);
+      expected = tc > 0 ? CONFIG.goal * ec / tc : 0;
+    }
+  }
+  const delta = Math.round(total - expected);
+  $('leftToday').textContent = rest ? 'Rest' : leftToday.toLocaleString();
+  $('leftTodayLabel').textContent = rest ? 'Rest day: target 0' : 'Left today (pace target ' + target.toLocaleString() + ')';
   $('leftChallenge').textContent = leftYear.toLocaleString();
   $('paceNum').textContent = (delta >= 0 ? '+' : '') + delta.toLocaleString();
-  $('paceText').textContent = delta >= 0
-    ? '🎉 You are ' + delta.toLocaleString() + ' push-ups ahead of pace. Keep it rolling.'
-    : 'You are ' + Math.abs(delta).toLocaleString() + ' push-ups behind pace — ' +
-      Math.abs(delta).toLocaleString() + ' extra spread over the remaining days closes the gap.';
+  if (rest) {
+    $('paceText').textContent = '🌿 Rest day: no per-set plan today. Recovery counts: anything you log shrinks what is left this year, and skipping today costs nothing.';
+  } else if (delta >= 0) {
+    $('paceText').textContent = '🎉 You are ' + delta.toLocaleString() + ' push-ups ahead of pace. Keep it rolling.';
+  } else {
+    const wd = Math.max(1, remainingWorkDays());
+    $('paceText').textContent = 'You are ' + Math.abs(delta).toLocaleString() + ' push-ups behind pace. About ' +
+      Math.ceil(Math.abs(delta) / wd).toLocaleString() + ' extra per work day closes the gap.';
+  }
   const pct = Math.min(100, (total / CONFIG.goal) * 100);
   $('progressFill').style.width = pct + '%';
   $('progressLabel').textContent = total.toLocaleString() + ' / ' + CONFIG.goal.toLocaleString() +
     ' — ' + pct.toFixed(1) + '%';
+  const complete = total >= CONFIG.goal || (target > 0 && today >= target);
+  $('replayWrap').innerHTML = complete
+    ? '<button class="btn" id="replayBtn" style="margin-top:12px">🎉 Replay celebration</button>' : '';
+  if (complete) $('replayBtn').addEventListener('click', () =>
+    fireCelebration(total >= CONFIG.goal ? 'year' : 'daily'));
   $('statToday').textContent = today.toLocaleString();
   $('statTotal').textContent = total.toLocaleString();
   $('statStreak').textContent = streakDays();
   $('statMax').textContent = maxSet('pushups').reps;
+  $('todayExercises').innerHTML = data.exercises.map(ex => {
+    const t = effectiveTarget(ex.slug), d = todayDone(ex.slug);
+    return '<p style="margin:4px 0"><strong>' + esc(ex.name) + ':</strong> ' + d.toLocaleString() +
+      (t > 0 ? ' / ' + t.toLocaleString() + ' today' : ' today') + '</p>';
+  }).join('');
+  const slots = slotsLeft(data.settings.intervalMinutes);
+  if (rest) {
+    $('nextSetLine').textContent = 'Rest day: no suggested set. Log only if you feel like it.';
+  } else if (target > 0 && today >= target) {
+    $('nextSetLine').textContent = 'Target hit for today 🎉';
+  } else {
+    const s = suggestedSet('pushups');
+    $('nextSetLine').textContent = s > 0
+      ? 'Next suggested set: ' + s + ' push-ups · ' + slots + ' check-ins left before ' + fmtTime(data.settings.dayEndMinutes)
+      : '';
+  }
+  // Rest day card
+  const wk = data.settings.weeklyRestWeekday;
+  let restHtml = '';
+  if (rest) {
+    const viaWeekly = !data.restDates.includes(todayStr()) && wk !== null && wk !== undefined &&
+      parseDate(todayStr()).getDay() === wk;
+    restHtml = '<div class="resthero">Rest day</div>' +
+      '<p class="center muted">' + (viaWeekly
+        ? 'Today is your weekly rest day (' + WEEKDAY_NAMES[wk] + '). Target 0: nothing to make up.'
+        : 'You set today as a rest day. Target 0: nothing to make up.') +
+      ' Anything you log counts as bonus.</p>' +
+      '<button class="btn" id="restToggleBtn">Make today a work day</button>';
+  } else {
+    restHtml = '<p class="muted">Today is a work day. Target: <strong>' + target.toLocaleString() +
+      ' push-ups</strong> (pace).</p>' +
+      '<p class="small muted">' + (wk !== null && wk !== undefined
+        ? 'Weekly rest day: ' + WEEKDAY_NAMES[wk] + 's'
+        : 'No weekly rest day set: pick one on the Reminders tab') + '</p>' +
+      '<button class="btn" id="restToggleBtn">Make today a rest day</button>';
+  }
+  $('restTodayBody').innerHTML = restHtml;
+  $('restToggleBtn').addEventListener('click', () => {
+    const t = todayStr();
+    if (isRestDate(t)) {
+      data.restDates = data.restDates.filter(d => d !== t);
+      if (isRestDate(t) && !data.workDates.includes(t)) data.workDates.push(t);
+    } else {
+      data.workDates = data.workDates.filter(d => d !== t);
+      if (!data.restDates.includes(t)) data.restDates.push(t);
+    }
+    saveData(); render();
+  });
   $('firstRunToday').textContent = data.logs.length === 0
-    ? 'Nothing logged yet — head to the Log tab and do your first set. 💪' : '';
+    ? 'Nothing logged yet. Head to the Log tab and do your first set. 💪' : '';
 }
+
+/* Rhythm card: one implementation, mounted on Today and at the top of Reminders. */
+function rhythmCardHTML(P) {
+  const mins = data.settings.intervalMinutes;
+  const sug = rhythmSuggestion();
+  const sugHtml = sug
+    ? '<div class="suggestbox show">💡 On ' + esc(sug.scopeLabel.toLowerCase()) + ' you usually pick every ' +
+      sug.minutes + ' min (×' + sug.sampleCount + ').' +
+      '<button class="btn" data-suguse="' + P + '">Use every ' + sug.minutes + ' min</button>' +
+      '<button class="btn" data-sugdismiss="' + P + '">Not now</button></div>'
+    : '';
+  const patterns = rhythmPatterns();
+  const patHtml = patterns.length
+    ? patterns.map(p => '<p style="margin:4px 0">' + esc(p.label) + ': usually every ' + p.minutes +
+        ' min <span class="muted">· ×' + p.sampleCount + '</span></p>').join('')
+    : '<p class="muted" style="margin:4px 0">No patterns yet. Pick a rhythm a few times in the same part of the day and it will start suggesting it here.</p>';
+  return '<div class="card">' +
+    '<h2>Check-in rhythm</h2>' +
+    '<p class="small muted" style="margin-top:0">How often check-ins land. Set it once and the whole day\'s plan, including every suggested set, re-spreads around it.</p>' +
+    sugHtml +
+    '<label class="field" for="rhythmSlider' + P + '">Every <strong id="rhythmVal' + P + '">' + mins +
+      '</strong> minutes: <span id="rhythmName' + P + '">' + rhythmLabel(mins) + '</span></label>' +
+    '<input type="range" class="normalslider" id="rhythmSlider' + P + '" min="5" max="120" step="5" value="' + mins + '">' +
+    '<div class="sliderticks"><span>5 min</span><span>120 min</span></div>' +
+    '<p class="small" id="rhythmPreview' + P + '"></p>' +
+    '<div class="modechips">' + RHYTHM_CHIPS.map(c =>
+      '<button class="chip" data-rhythm="' + P + '" data-mins="' + c.mins + '" aria-pressed="' +
+      (mins === c.mins) + '">' + c.label + '</button>').join('') + '</div>' +
+    '<details><summary class="small muted" style="cursor:pointer;min-height:32px">Your learned patterns</summary>' +
+    '<div style="margin-top:6px">' + patHtml + '</div></details>' +
+    '</div>';
+}
+function rhythmPreviewText(mins) {
+  if (isRestToday()) return 'Rest day today: this rhythm is set for your next work day; today stays quiet.';
+  const target = paceTargetToday(), done = todayDone('pushups');
+  const remaining = Math.max(0, target - done);
+  const slots = slotsLeft(mins);
+  if (remaining <= 0) return 'At every ' + mins + ' min: today\'s push-up target is already hit. 🎉';
+  if (slots <= 0) return 'At every ' + mins + ' min: the day window has ended, so it is all ' + remaining + ' in one go, or carry them to tomorrow\'s pace.';
+  return 'At every ' + mins + ' min: ' + slots + ' check-ins left until ' + fmtTime(data.settings.dayEndMinutes) +
+    ', about ' + Math.ceil(remaining / slots) + ' push-ups per set.';
+}
+function renderRhythm() {
+  ['T', 'R'].forEach(P => {
+    const mount = $('rhythmMount' + P);
+    mount.innerHTML = rhythmCardHTML(P);
+    const slider = $('rhythmSlider' + P);
+    slider.addEventListener('input', () => {
+      const v = +slider.value;
+      $('rhythmVal' + P).textContent = v;
+      $('rhythmName' + P).textContent = rhythmLabel(v);
+      $('rhythmPreview' + P).textContent = rhythmPreviewText(v);
+    });
+    slider.addEventListener('change', () => commitRhythm(+slider.value));
+    $('rhythmPreview' + P).textContent = rhythmPreviewText(data.settings.intervalMinutes);
+    mount.querySelectorAll('button[data-rhythm]').forEach(b =>
+      b.addEventListener('click', () => commitRhythm(+b.dataset.mins)));
+    const use = mount.querySelector('button[data-suguse]');
+    if (use) use.addEventListener('click', () => {
+      const sug = rhythmSuggestion(); if (sug) commitRhythm(sug.minutes);
+    });
+    const dis = mount.querySelector('button[data-sugdismiss]');
+    if (dis) dis.addEventListener('click', () => {
+      const sug = rhythmSuggestion();
+      if (sug) { data.settings.rhythmDismissKey = sug.key; saveData(); render(); }
+    });
+  });
+}
+
 function renderLog() {
-  // Exercise switcher chips
-  $('exerciseChips').innerHTML = data.exercises.map(ex =>
-    '<button class="chip' + (ex.slug === selectedExercise ? ' active' : '') +
-    '" data-ex="' + esc(ex.slug) + '">' + esc(ex.name) + '</button>').join('');
-  $('exerciseChips').querySelectorAll('button').forEach(b =>
+  // Gesture settings behind the cog
+  $('gestureOptions').innerHTML = GESTURE_OPTIONS.map(o =>
+    '<label class="gmode"><input type="radio" name="gestureMode" value="' + o.id + '"' +
+    (data.settings.gestureMode === o.id ? ' checked' : '') + '><span>' + o.label +
+    '<span class="hint">' + o.hint + '</span></span></label>').join('');
+  $('gestureOptions').querySelectorAll('input[name=gestureMode]').forEach(r =>
+    r.addEventListener('change', () => {
+      data.settings.gestureMode = r.value; saveData(); renderLog();
+    }));
+  const gm = data.settings.gestureMode;
+  $('gestureTip').textContent = gm === 'off' ? 'Quick gestures are off: use the LOG button or Copy last set.' :
+    gm === 'tap' ? 'Tip: double-tap the big number to log instantly.' :
+    gm === 'hold' ? 'Tip: press and hold the big number until the ring fills to log.' :
+    'Tip: double-tap or hold the big number to log instantly.';
+  // Exercise swipe row: favorites first, then the rest in their usual order
+  const sorted = data.exercises.slice().sort((a, b) =>
+    (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0));
+  $('exerciseChips').innerHTML = sorted.map(ex =>
+    '<span class="exchip' + (ex.slug === selectedExercise ? ' active' : '') + '">' +
+    '<button class="exname" data-ex="' + esc(ex.slug) + '">' + esc(ex.name) + '</button>' +
+    '<button class="exstar' + (ex.favorite ? ' fav' : '') + '" data-star="' + esc(ex.slug) +
+    '" aria-label="Star ' + esc(ex.name) + ' as a favorite">' + (ex.favorite ? '★' : '☆') + '</button></span>'
+  ).join('') + '<span class="exchip addnew"><button data-addex="1">+ New</button></span>';
+  $('exerciseChips').querySelectorAll('button[data-ex]').forEach(b =>
     b.addEventListener('click', () => { selectedExercise = b.dataset.ex; renderLog(); }));
+  $('exerciseChips').querySelectorAll('button[data-star]').forEach(b =>
+    b.addEventListener('click', () => {
+      const ex = data.exercises.find(e => e.slug === b.dataset.star);
+      ex.favorite = !ex.favorite; saveData(); renderLog();
+    }));
+  $('exerciseChips').querySelector('button[data-addex]').addEventListener('click', () => showTab('exercises'));
   // Quick chips + star chip with the current suggestion
   const sug = suggestedSet(selectedExercise);
   const quick = [5, 10, 15, 20, 25].map(n =>
@@ -512,27 +1206,32 @@ function renderLog() {
   $('quickChips').querySelectorAll('button').forEach(b =>
     b.addEventListener('click', () => {
       $('repSlider').value = Math.min(60, +b.dataset.q);
-      $('bigNumber').textContent = $('repSlider').value;
+      if (Date.now() >= cooldownUntil) $('bigNumber').textContent = $('repSlider').value;
       updateLogButton();
     }));
-  if ($('bigNumber').textContent !== $('repSlider').value)
-    $('bigNumber').textContent = $('repSlider').value;
   updateLogButton();
-  // Recent sets (all exercises, newest first) with delete
+  // Recent sets: collapsed by default behind a summary header
+  const todayCount = data.logs.filter(l => l.date === todayStr()).length;
+  $('recentSummary').textContent = 'Recent sets · ' + todayCount + ' today · ' + data.logs.length + ' total';
   const recent = data.logs.slice(-12).reverse();
   $('recentSets').innerHTML = recent.length ? recent.map(l => {
     const ex = data.exercises.find(e => e.slug === l.exercise);
+    const when = new Date(l.ts).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
     return '<li><span>' + l.reps + ' × ' + esc(ex ? ex.name : l.exercise) +
-      ' <span class="muted small">' + l.date + '</span></span>' +
-      '<button data-del="' + l.id + '" aria-label="Delete set">🗑</button></li>';
-  }).join('') : '<li class="muted">No sets yet — log your first one above.</li>';
+      ' <span class="muted small">' + (l.date === todayStr() ? when : l.date + ' ' + when) + '</span></span>' +
+      '<span class="rowbtns">' +
+      (l.reps >= 2 ? '<button class="splitbtn" data-split="' + l.id + '" aria-label="Split this set into two">Split</button>' : '') +
+      '<button data-del="' + l.id + '" aria-label="Delete set">🗑</button></span></li>';
+  }).join('') : '<li class="muted">No sets yet: log your first one above.</li>';
   $('recentSets').querySelectorAll('button[data-del]').forEach(b =>
     b.addEventListener('click', () => {
       data.logs = data.logs.filter(l => l.id !== b.dataset.del);
       saveData(); render();
     }));
+  $('recentSets').querySelectorAll('button[data-split]').forEach(b =>
+    b.addEventListener('click', () => splitEntry(b.dataset.split)));
 }
-function barChartSVG(pairs, color) { // pairs: [{label, value}]
+function barChartSVG(pairs, color) {
   if (!pairs.length) return '<p class="muted">No data yet.</p>';
   const max = Math.max(1, ...pairs.map(p => p.value));
   const w = 560, h = 150, bw = Math.max(8, Math.floor(w / pairs.length) - 6);
@@ -553,7 +1252,6 @@ function renderProgress() {
   const mx = maxSet('pushups');
   $('maxRecord').textContent = mx.reps + ' reps';
   $('maxRecordWhen').textContent = mx.date ? 'on ' + mx.date : '(no sets yet)';
-  // Charts over the last 14 days
   const totals = dailyTotals('pushups');
   const days = [], maxPairs = [], totalPairs = [];
   for (let i = 13; i >= 0; i--) {
@@ -565,7 +1263,6 @@ function renderProgress() {
   }
   $('maxChart').innerHTML = barChartSVG(maxPairs, '#ffb340');
   $('totalChart').innerHTML = barChartSVG(totalPairs, '#35c759');
-  // Weekly analytics
   const last7 = days.slice(-7).reduce((a, d) => a + (totals[d] || 0), 0);
   const prev7dates = []; for (let i = 14; i >= 8; i--) prev7dates.push(addDays(todayStr(), -i));
   const prev7 = prev7dates.reduce((a, d) => a + (totals[d] || 0), 0);
@@ -578,7 +1275,6 @@ function renderProgress() {
     '<tr><td>This week vs last week</td><td>' + (last7 - prev7 >= 0 ? '+' : '') + (last7 - prev7) + '</td></tr>' +
     '<tr><td>Best day</td><td>' + best.toLocaleString() + '</td></tr>' +
     '<tr><td>Average per active day</td><td>' + avg.toFixed(1) + '</td></tr>';
-  // Badges
   const total = totalDone('pushups'), streak = streakDays();
   const perfectDay = allDays.some(d => totals[d] >= CONFIG.dailyTarget);
   const badges = [
@@ -599,23 +1295,42 @@ function renderProgress() {
 }
 function renderExercises() {
   $('exerciseCards').innerHTML = data.exercises.map(ex => {
+    const open = openExerciseDetails.has(ex.slug);
     const recent = logsFor(ex.slug).slice(-3).reverse();
-    return '<div class="card"><h2>' + esc(ex.name) + '</h2>' +
+    const t = effectiveTarget(ex.slug);
+    return '<div class="card"><h2>' + esc(ex.name) + (ex.favorite ? ' <span style="color:#ffd23f">★</span>' : '') + '</h2>' +
       '<div class="statgrid">' +
       '<div class="stat"><div class="n">' + todayDone(ex.slug) + '</div><div class="l">Today</div></div>' +
       '<div class="stat"><div class="n">' + totalDone(ex.slug) + '</div><div class="l">All-time</div></div>' +
       '<div class="stat"><div class="n">' + maxSet(ex.slug).reps + '</div><div class="l">Max set</div></div>' +
-      '<div class="stat"><div class="n">' + (ex.dailyTarget || 0) + '</div><div class="l">Daily target</div></div>' +
+      '<div class="stat"><div class="n">' + t + '</div><div class="l">Target today</div></div>' +
       '</div>' +
-      '<label class="field">Daily target</label><div class="targetedit">' +
-      '<input type="number" min="0" value="' + (ex.dailyTarget || 0) + '" id="target-' + esc(ex.slug) + '">' +
-      '<button class="btn" data-target-save="' + esc(ex.slug) + '">Save</button></div>' +
+      '<div class="btnrow">' +
+      '<button class="btn primary" data-log-ex="' + esc(ex.slug) + '">Log ' + esc(ex.name) + '</button>' +
+      '<button class="btn" data-details="' + esc(ex.slug) + '" aria-expanded="' + open + '">' + (open ? 'Hide details' : 'Details') + '</button>' +
+      '</div>' +
+      (open ?
+      '<div>' +
+      (ex.slug === 'pushups'
+        ? '<p class="small muted">Push-ups run on the pace target: what is left in the challenge, spread over the days (or work days) left. Today that is ' + t + '.</p>'
+        : '<label class="field">Daily target</label><div class="targetedit">' +
+          '<input type="number" min="0" value="' + (ex.dailyTarget || 0) + '" id="target-' + esc(ex.slug) + '">' +
+          '<button class="btn" data-target-save="' + esc(ex.slug) + '">Save</button></div>') +
       (recent.length ? '<h3>Recent sets</h3><ul class="sets">' + recent.map(l =>
         '<li><span>' + l.reps + ' reps</span><span class="muted small">' + l.date + '</span></li>').join('') + '</ul>'
         : '<p class="muted small">No sets yet.</p>') +
       (ex.custom ? '<button class="btn danger" data-remove="' + esc(ex.slug) + '">Remove exercise</button>' : '') +
+      '</div>' : '') +
       '</div>';
   }).join('');
+  $('exerciseCards').querySelectorAll('button[data-log-ex]').forEach(b =>
+    b.addEventListener('click', () => { selectedExercise = b.dataset.logEx; showTab('log'); renderLog(); }));
+  $('exerciseCards').querySelectorAll('button[data-details]').forEach(b =>
+    b.addEventListener('click', () => {
+      if (openExerciseDetails.has(b.dataset.details)) openExerciseDetails.delete(b.dataset.details);
+      else openExerciseDetails.add(b.dataset.details);
+      renderExercises();
+    }));
   $('exerciseCards').querySelectorAll('button[data-target-save]').forEach(b =>
     b.addEventListener('click', () => {
       const ex = data.exercises.find(e => e.slug === b.dataset.targetSave);
@@ -635,7 +1350,7 @@ $('addExerciseBtn').addEventListener('click', () => {
   const name = $('newExName').value.trim();
   if (!name) { toast('Give the exercise a name first'); return; }
   const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now().toString(36);
-  data.exercises.push({ slug: slug, name: name, custom: true,
+  data.exercises.push({ slug: slug, name: name, custom: true, favorite: false,
     dailyTarget: Math.max(0, parseInt($('newExTarget').value, 10) || 0) });
   $('newExName').value = ''; $('newExTarget').value = '';
   saveData(); render(); toast('Added ' + name);
@@ -643,32 +1358,74 @@ $('addExerciseBtn').addEventListener('click', () => {
 
 /* ---------------- Reminders ---------------- */
 function renderReminders() {
-  const targeted = data.exercises.filter(e => e.dailyTarget > 0);
-  $('suggestions').innerHTML = targeted.length ? targeted.map(ex => {
-    const left = Math.max(0, ex.dailyTarget - todayDone(ex.slug));
-    const s = suggestedSet(ex.slug);
-    return '<p><strong>' + esc(ex.name) + ':</strong> ' +
-      (left === 0 ? 'target reached today 🎉' : ('about ' + s + ' per check-in (' + left + ' left today)')) + '</p>';
-  }).join('') : '<p class="muted">No daily targets set — add one on the Exercises tab.</p>';
+  const slots = slotsLeft(data.settings.intervalMinutes);
+  const targeted = data.exercises.filter(e => effectiveTarget(e.slug) > 0);
+  $('suggestions').innerHTML = isRestToday()
+    ? '<p>🌿 Rest day today: no suggested sets, and reminders stay quiet. Anything you log is bonus.</p>'
+    : (targeted.length ? targeted.map(ex => {
+        const left = Math.max(0, effectiveTarget(ex.slug) - todayDone(ex.slug));
+        const s = suggestedSet(ex.slug);
+        return '<p><strong>' + esc(ex.name) + ':</strong> ' +
+          (left === 0 ? 'target reached today 🎉' :
+            ('about ' + s + ' per check-in (' + left + ' left today, ' + slots + ' check-ins left)')) + '</p>';
+      }).join('') : '<p class="muted">No daily targets set. Add one on the Exercises tab.</p>');
   const b = $('muteBanner');
   if (muteActive()) {
     b.innerHTML = '<p>🔕 <strong>' + (data.mute.mode === 'snooze' ? 'Snoozed' : 'Muted (' + data.mute.mode + ')') +
       '</strong> until ' + new Date(data.mute.until).toLocaleString() + '</p>';
-  } else b.innerHTML = '<p class="muted">Reminders are on.</p>';
-  $('dayEndSlider').value = data.settings.dayEndMinutes;
+  } else b.innerHTML = '<p class="muted">Reminders are on' + (isRestToday() ? ', but today is a rest day, so they stay quiet' : '') + '.</p>';
+  $('remDot').classList.toggle('show', muteActive() || isRestToday());
+  // Weekly rest day picker
+  const wk = data.settings.weeklyRestWeekday;
+  const opts = [{ value: null, label: 'None' }].concat(WEEKDAY_SHORT.map((s, i) => ({ value: i, label: s })));
+  $('weeklyRestRow').innerHTML = opts.map(o =>
+    '<button class="chip" data-week="' + (o.value === null ? 'none' : o.value) + '" aria-pressed="' +
+    (wk === o.value || (o.value === null && (wk === null || wk === undefined))) + '">' + o.label + '</button>').join('');
+  $('weeklyRestRow').querySelectorAll('button[data-week]').forEach(btn =>
+    btn.addEventListener('click', () => {
+      data.settings.weeklyRestWeekday = btn.dataset.week === 'none' ? null : +btn.dataset.week;
+      saveData(); render();
+    }));
+  const remaining = Math.max(0, CONFIG.goal - totalDone('pushups'));
+  if (wk !== null && wk !== undefined) {
+    const wd = remainingWorkDays();
+    $('weeklyRestStatus').textContent = 'Every ' + WEEKDAY_NAMES[wk] + ' is a rest day through Dec 31: ' +
+      wd + ' work days left, target ' + (wd > 0 ? Math.ceil(remaining / wd) : remaining) +
+      ' per work day (flat average ' + flatTargetToday() + ' per day). Reminders stay quiet on rest days.';
+  } else {
+    $('weeklyRestStatus').textContent = 'No weekly rest day yet: pace is the flat ' + flatTargetToday() +
+      ' per day over ' + remainingCalendarDays() + ' calendar days. Not sure yet? Leave it on None and use the Rest day toggle on the Today tab for one-off days off.';
+  }
+  if (document.activeElement !== $('dayEndSlider')) $('dayEndSlider').value = data.settings.dayEndMinutes;
   $('dayEndLabel').textContent = fmtTime(data.settings.dayEndMinutes);
   updateCountdown();
 }
 function updateCountdown() {
   const el = $('countdown'); if (!el) return;
-  const now = new Date();
-  const secsNow = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-  const interval = CONFIG.checkinIntervalMinutes * 60;
-  let remain = interval - (secsNow % interval);
-  if (remain === interval) remain = 0;
-  el.textContent = Math.floor(remain / 60) + 'm ' + String(remain % 60).padStart(2, '0') + 's';
+  if (muteActive()) {
+    el.textContent = 'paused until ' + new Date(data.mute.until).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    return;
+  }
+  if (isRestToday()) { el.textContent = 'rest day: none today'; return; }
+  const now = Date.now();
+  const intervalMs = data.settings.intervalMinutes * 60000;
+  if (now < windowStartTs()) {
+    const mins = Math.ceil((windowStartTs() - now) / 60000);
+    el.textContent = 'first check-in at ' + fmtTime(CONFIG.activeStartHour * 60) + ' (in ' + Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm)';
+    return;
+  }
+  if (now > dayEndTs()) { el.textContent = 'day ended at ' + fmtTime(data.settings.dayEndMinutes); return; }
+  const remain = intervalMs - ((now - windowStartTs()) % intervalMs);
+  const secs = Math.ceil(remain / 1000);
+  el.textContent = Math.floor(secs / 60) + 'm ' + String(secs % 60).padStart(2, '0') + 's';
 }
-setInterval(updateCountdown, 1000);
+let lastPauseKey = '';
+setInterval(() => {
+  updateCountdown();
+  const key = (data.mute.mode || '') + '|' + data.mute.until + '|' + isRestToday() + '|' + todayStr();
+  if (lastPauseKey && key !== lastPauseKey) render();
+  lastPauseKey = key;
+}, 1000);
 
 $('snoozeSlider').addEventListener('input', e => {
   const v = +e.target.value;
@@ -697,7 +1454,7 @@ $('dayEndSlider').addEventListener('input', e => {
   data.settings.dayEndDate = todayStr();
   saveData();
   $('dayEndLabel').textContent = fmtTime(data.settings.dayEndMinutes);
-  renderReminders();
+  renderReminders(); renderToday();
 });
 
 /* ---------------- Export / Import JSON ---------------- */
@@ -717,9 +1474,9 @@ $('importFile').addEventListener('change', e => {
     try {
       const d = JSON.parse(r.result);
       if (!d.exercises || !d.logs) throw new Error('bad file');
-      data = d;
-      data.settings = data.settings || { dayEndMinutes: CONFIG.activeEndHour * 60, dayEndDate: todayStr() };
-      data.mute = data.mute || { mode: null, until: 0 };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+      data = loadData();                       // re-run migration on the imported copy
+      if (!data.exercises.find(e => e.slug === selectedExercise)) selectedExercise = 'pushups';
       saveData(); render(); toast('Import complete ✓');
     } catch (err) { toast('That file could not be imported'); }
   };
@@ -728,7 +1485,7 @@ $('importFile').addEventListener('change', e => {
 
 /* ---------------- Go ---------------- */
 render();
-showTab('log'); // open on Log — logging first, always
+showTab('log'); // open on Log: logging first, always
 </script>
 </body>
 </html>
