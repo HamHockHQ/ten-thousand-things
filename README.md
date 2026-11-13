@@ -32,13 +32,18 @@ No install works for you? [PROMPT.md](PROMPT.md) also contains the complete long
 
 ## What's inside the tracker
 
-- **Opens on the Log tab** — logging is the first thing you see
-- **Giant logging screen:** huge rep number, oversized slider, quick chips (5/10/15/20/25 + suggested-set chip), a huge LOG button, **Copy last set** in one tap, and **double-tap to log**
-- **Five bottom tabs:** Today · Log · Progress · Exercises · Reminders, plus a **floating Home button** above everything on every screen
-- **Today:** reps left today, left in the challenge, ahead/behind pace, streak, max set
-- **Smart suggested sets:** what's left ÷ remaining 20-minute check-ins until your day-end
-- **Custom exercises** ("+ New exercise") with optional daily targets — squats and sit-ups included from the start
-- **Reminders tab:** snooze slider (15 min – 12 h), mute-for-today, mute-for-a-week, adjustable day-end (default 10:00 PM, resets daily), next-check-in countdown
+- **Opens on the Log tab:** logging is the first thing you see
+- **Giant logging screen:** huge rep number, oversized slider, quick chips (5/10/15/20/25 + suggested-set chip), a huge LOG button, **Copy last set** in one tap
+- **Gesture logging, tuned behind a cog:** double-tap (a relaxed 0.7s window) or hold (650ms, ring fills) the big number to log, with a "+N logged" burst at the tap point, scroll-vs-gesture arbitration, and a 10-second lockout so a stray tap cannot double-log
+- **Five bottom tabs:** Today · Log · Progress · Exercises · Reminders, plus a **floating Home button** above everything on every screen, spaced so it never covers a control
+- **Today:** reps left today against a dynamic pace target, left in the challenge, ahead/behind pace, streak, max set, and a Replay button once the goal celebration has fired
+- **Check-in rhythm card** (on Today and at the top of Reminders): a slider from every 5 to every 120 minutes, one-tap modes (Catch-up 10 · Normal 20 · Focused 45 · Deep work 60), a live preview of check-ins left and per-set size while you drag, instant re-spread of the day's plan when you save, and learned patterns it suggests back by weekday and time of day
+- **Rest days:** a Today toggle (target 0, reminders quiet, anything logged counts as bonus) plus a weekly rest-day picker. Pace spreads over work days only, so a planned rest day never shows as behind and never breaks the streak
+- **Goal celebration:** confetti and a flexing smoothie cup the moment the daily target lands, once a day, with a replay on the Today tab
+- **Forgot to log some sets?** (collapsed by default): backfill missed sets as separate entries so totals rise without inflating your max set, or type a list like 12, 10, 8. **Split** turns any set into two near-halves on the same date, and Recent Sets starts collapsed too
+- **Smart suggested sets:** what's left of today's target ÷ the check-ins remaining at your current rhythm until your day-end
+- **Custom exercises** ("+ New exercise") with optional daily targets: squats and sit-ups included from the start. Exercises live in a swipe row on the Log tab with favorites starred first, and each exercise card keeps its details collapsed until you open them
+- **Reminders tab:** snooze slider (15 min to 12 h), mute-for-today, mute-for-a-week, adjustable day-end (default 10:00 PM, resets daily), next-check-in countdown on your current rhythm, and a dot on the tab while reminders are paused or today is a rest day
 - **Progress:** max-set records and graphs, daily/weekly analytics, streaks, badges, "Shake It Up" random mini-challenges
 - **Export / Import (JSON)** so your history is yours to back up and move
 
@@ -47,7 +52,7 @@ No install works for you? [PROMPT.md](PROMPT.md) also contains the complete long
 | File | What it is |
 | --- | --- |
 | `README.md` | This page — the front door and install guide |
-| `PROMPT.md` | The complete one-prompt build spec (v2) + the short bootstrap prompt |
+| `PROMPT.md` | The complete one-prompt build spec (v3) + the short bootstrap prompt |
 | `tracker.html` | The full standalone tracker — open it and log; data lives in your browser |
 | `index.html` | The demo / get-a-copy page (sample data; for trying and sharing) |
 
